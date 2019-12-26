@@ -127,5 +127,32 @@ void testLiteInterpreterPrimOverload() {
   auto output = bc.run_method("forward", inputs);
   AT_ASSERT(output.toIntList()[2] == 3);
 }
+
+void testLiteInterpreterPrim() {
+  script::Module m("m");
+  m.define(R"JIT(
+        def test_shape_prop(self, x):
+            return int(x)
+  )JIT");
+
+  std::vector<IValue> inputs;
+  auto minput = 3.5 * torch::ones({});
+  inputs.emplace_back(minput);
+  auto ref = m.run_method("test_shape_prop", minput);
+  std::cout << ref << std::endl;
+
+//  std::stringstream ss;
+//  m._save_for_mobile(ss);
+//  mobile::Module bc = _load_for_mobile(ss);
+//  IValue res;
+//  for (int i = 0; i < 3; ++i) {
+//    auto bcinputs = inputs;
+//    res = bc.run_method("add_it", bcinputs);
+//  }
+//
+//  auto resd = res.toTensor().item<float>();
+//  auto refd = ref.toTensor().item<float>();
+//  AT_ASSERT(resd == refd);
+}
 } // namespace torch
 } // namespace jit
