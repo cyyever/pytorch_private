@@ -363,7 +363,7 @@ def check_submodules():
 def build_deps():
     report('-- Building version ' + version)
 
-    check_submodules()
+    #check_submodules()
     check_pydep('yaml', 'pyyaml')
 
     build_caffe2(version=version,
