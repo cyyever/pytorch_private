@@ -1,20 +1,8 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-#cmake_policy(SET CMP0022 NEW)
-#cmake_policy(SET CMP0023 NEW)
-
-# Use compiler ID "AppleClang" instead of "Clang" for XCode.
-# Not setting this sometimes makes XCode C compiler gets detected as "Clang",
-# even when the C++ one is detected as "AppleClang".
-cmake_policy(SET CMP0010 NEW)
-cmake_policy(SET CMP0025 NEW)
-
-# Suppress warning flags in default MSVC configuration.  It's not
-# mandatory that we do this (and we don't if cmake is old), but it's
-# nice when it's possible, and it's possible on our Windows configs.
-cmake_policy(SET CMP0092 NEW)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+set(FIND_CUDA_MODULE_DEPRECATED ON)
 
 # ---[ Project and semantic versioning.
-project(Torch CXX C)
+project(Torch LANGUAGES CXX C)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(LINUX TRUE)
@@ -32,6 +20,7 @@ if(env_cxx_standard GREATER -1)
       "PyTorch requires -std=c++17. Please remove -std=c++ settings in your environment.")
 endif()
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested to build this target.")
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD   11 CACHE STRING "The C standard whose features are requested to build this target.")
 
 if(DEFINED GLIBCXX_USE_CXX11_ABI)
@@ -55,10 +44,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #      find_package(Caffe2 REQUIRED)
 #    endif()
 set(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO ON)
-
-# Googletest's cmake files are going to set it on once they are processed. Let's
-# set it at the very beginning so that the entire build is deterministic.
-set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 if(NOT DEFINED BLAS_SET_BY_USER)
   if(DEFINED BLAS)
@@ -338,6 +323,16 @@ cmake_dependent_option(
     BUILD_FUNCTORCH "Build Functorch" ON "BUILD_PYTHON" OFF)
 
 
+# if(USE_CUDA)
+#   include(CheckLanguage)
+#   check_language(CUDA)
+#   if(CMAKE_CUDA_COMPILER)
+#     enable_language(CUDA)
+#   else()
+#     message(FATAL_ERROR "No CUDA support")
+#   endif()
+# endif()
+
 if(USE_CCACHE)
   find_program(CCACHE_PROGRAM ccache)
   if(CCACHE_PROGRAM)
@@ -468,21 +463,6 @@ if(MSVC)
         string(REGEX REPLACE "/Z[iI]" "/Z7" ${flag_var} "${${flag_var}}")
       endif(${flag_var} MATCHES "/Z[iI]")
     endif(MSVC_Z7_OVERRIDE)
-    # Turn off warnings on Windows.  In an ideal world we'd be warning
-    # clean on Windows too, but this is too much work for our
-    # non-Windows developers.
-    #
-    # NB: Technically, this is not necessary if CMP0092 was applied
-    # properly, but only cmake >= 3.15 has this policy, so we nail
-    # it one more time just be safe.
-    #
-    # NB2: This is NOT enough to prevent warnings from nvcc on MSVC.  At the
-    # moment only CMP0092 is enough to prevent those warnings too.
-    string(REPLACE "/W3" "" ${flag_var} "${${flag_var}}")
-
-    # Turn off warnings (Windows build is currently is extremely warning
-    # unclean and the warnings aren't telling us anything useful.)
-    string(APPEND ${flag_var} " /w")
 
     if(${CAFFE2_USE_MSVC_STATIC_RUNTIME})
       if(${flag_var} MATCHES "/MD")
@@ -1109,12 +1089,8 @@ if(BUILD_SHARED_LIBS)
       COMPONENT dev)
   install(FILES
       ${PROJECT_SOURCE_DIR}/cmake/public/cuda.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/glog.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/gflags.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/mkl.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/mkldnn.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/protobuf.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/threads.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/utils.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/LoadHIP.cmake
       DESTINATION share/cmake/Caffe2/public

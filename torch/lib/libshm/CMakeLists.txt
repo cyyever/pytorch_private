@@ -2,7 +2,7 @@ project(libshm C CXX)
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 set(TORCH_ROOT ${CMAKE_CURRENT_LIST_DIR}/../../../)
-include(${TORCH_ROOT}/cmake/public/threads.cmake)
+find_package(Threads REQUIRED)
 
 if(NOT LIBSHM_INSTALL_LIB_SUBDIR)
   set(LIBSHM_INSTALL_LIB_SUBDIR "lib" CACHE PATH "libshm install library directory")
