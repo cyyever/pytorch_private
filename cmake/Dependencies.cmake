@@ -120,13 +120,22 @@ if(MSVC)
 endif(MSVC)
 
 # ---[ Threads
-include(${CMAKE_CURRENT_LIST_DIR}/public/threads.cmake)
-if(TARGET caffe2::Threads)
-  list(APPEND Caffe2_PUBLIC_DEPENDENCY_LIBS caffe2::Threads)
+find_package(Threads REQUIRED)
+if(TARGET Threads::Threads)
+  list(APPEND Caffe2_PRIVATE_DEPENDENCY_LIBS Threads::Threads)
 else()
   message(FATAL_ERROR
       "Cannot find threading library. Caffe2 requires Threads to compile.")
 endif()
+
+# ---[ EIGEN
+find_package(Eigen3 REQUIRED)
+if(EIGEN3_FOUND)
+  message(STATUS "Found system Eigen at " ${EIGEN3_INCLUDE_DIR})
+else()
+  message(FATAL_ERROR "Did not find system Eigen.")
+endif()
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 if(USE_TBB)
   if(USE_SYSTEM_TBB)
@@ -190,11 +199,10 @@ elseif(BLAS STREQUAL "ATLAS")
   set(BLAS_LIBRARIES ${ATLAS_LIBRARIES} cblas)
 elseif(BLAS STREQUAL "OpenBLAS")
   find_package(OpenBLAS REQUIRED)
-  include_directories(SYSTEM ${OpenBLAS_INCLUDE_DIR})
-  list(APPEND Caffe2_PUBLIC_DEPENDENCY_LIBS ${OpenBLAS_LIB})
+  include_directories(SYSTEM ${OpenBLAS_INCLUDE_DIRS})
+  list(APPEND Caffe2_PRIVATE_DEPENDENCY_LIBS ${OpenBLAS_LIBRARIES})
   set(BLAS_INFO "open")
   set(BLAS_FOUND 1)
-  set(BLAS_LIBRARIES ${OpenBLAS_LIB})
 elseif(BLAS STREQUAL "BLIS")
   find_package(BLIS REQUIRED)
   include_directories(SYSTEM ${BLIS_INCLUDE_DIR})
@@ -271,8 +279,7 @@ if(NOT INTERN_BUILD_MOBILE)
 elseif(INTERN_USE_EIGEN_BLAS)
   # Eigen BLAS for Mobile
   set(USE_BLAS 1)
-  include(${CMAKE_CURRENT_LIST_DIR}/External/EigenBLAS.cmake)
-  list(APPEND Caffe2_DEPENDENCY_LIBS eigen_blas)
+  list(APPEND Caffe2_DEPENDENCY_LIBS Eigen3::Eigen)
 endif()
 
 # ---[ FFTW
@@ -663,7 +670,7 @@ endif()
 
 # ---[ gflags
 if(USE_GFLAGS)
-  include(${CMAKE_CURRENT_LIST_DIR}/public/gflags.cmake)
+  find_package(gflags CONFIG QUIET)
   if(NOT TARGET gflags)
     message(WARNING
         "gflags is not found. Caffe2 will build without gflags support but "
@@ -675,7 +682,7 @@ endif()
 
 # ---[ Google-glog
 if(USE_GLOG)
-  include(${CMAKE_CURRENT_LIST_DIR}/public/glog.cmake)
+  find_package(glog CONFIG QUIET)
   if(TARGET glog::glog)
     set(CAFFE2_USE_GOOGLE_GLOG 1)
     include_directories(SYSTEM ${GLOG_INCLUDE_DIR})
@@ -970,24 +977,6 @@ elseif(NOT TARGET fp16 AND USE_SYSTEM_FP16)
 endif()
 list(APPEND Caffe2_DEPENDENCY_LIBS fp16)
 
-# ---[ EIGEN
-# Due to license considerations, we will only use the MPL2 parts of Eigen.
-set(EIGEN_MPL2_ONLY 1)
-if(USE_SYSTEM_EIGEN_INSTALL)
-  find_package(Eigen3)
-  if(EIGEN3_FOUND)
-    message(STATUS "Found system Eigen at " ${EIGEN3_INCLUDE_DIR})
-  else()
-    message(STATUS "Did not find system Eigen. Using third party subdirectory.")
-    set(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../third_party/eigen)
-    caffe2_update_option(USE_SYSTEM_EIGEN_INSTALL OFF)
-  endif()
-else()
-  message(STATUS "Using third party subdirectory Eigen.")
-  set(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../third_party/eigen)
-endif()
-include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
-
 # ---[ Python + Numpy
 if(BUILD_PYTHON)
   # If not given a Python installation, then use the current active Python
@@ -1085,20 +1074,12 @@ if(BUILD_PYTHON)
 endif()
 
 # ---[ pybind11
-if(USE_SYSTEM_BIND11)
-  find_package(pybind11 CONFIG)
-  if(NOT pybind11_FOUND)
-    find_package(pybind11)
-  endif()
-  if(NOT pybind11_FOUND)
-    message(FATAL "Cannot find system pybind11")
-  endif()
-else()
-    message(STATUS "Using third_party/pybind11.")
-    set(pybind11_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/../third_party/pybind11/include)
-    install(DIRECTORY ${pybind11_INCLUDE_DIRS}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}
-            FILES_MATCHING PATTERN "*.h")
+find_package(pybind11 CONFIG)
+if(NOT pybind11_FOUND)
+  find_package(pybind11)
+endif()
+if(NOT pybind11_FOUND)
+  message(FATAL "Cannot find system pybind11")
 endif()
 message(STATUS "pybind11 include dirs: " "${pybind11_INCLUDE_DIRS}")
 include_directories(SYSTEM ${pybind11_INCLUDE_DIRS})
@@ -1136,61 +1117,7 @@ endif()
 
 # ---[ OpenMP
 if(USE_OPENMP)
-  # OpenMP support?
-  set(WITH_OPENMP ON CACHE BOOL "OpenMP support if available?")
-
-  # macOS + GCC
-  if(APPLE AND CMAKE_COMPILER_IS_GNUCC)
-    exec_program(uname ARGS -v  OUTPUT_VARIABLE DARWIN_VERSION)
-    string(REGEX MATCH "[0-9]+" DARWIN_VERSION ${DARWIN_VERSION})
-    message(STATUS "macOS Darwin version: ${DARWIN_VERSION}")
-    if(DARWIN_VERSION GREATER 9)
-      set(APPLE_OPENMP_SUCKS 1)
-    endif(DARWIN_VERSION GREATER 9)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
-      OUTPUT_VARIABLE GCC_VERSION)
-    if(APPLE_OPENMP_SUCKS AND GCC_VERSION VERSION_LESS 4.6.2)
-      message(WARNING "Disabling OpenMP (unstable with this version of GCC). "
-        "Install GCC >= 4.6.2 or change your OS to enable OpenMP.")
-      add_compile_options(-Wno-unknown-pragmas)
-      set(WITH_OPENMP OFF CACHE BOOL "OpenMP support if available?" FORCE)
-    endif()
-  endif()
-
-  if("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC"
-    AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    message(STATUS "Setting OpenMP flags for clang-cl")
-    set(OpenMP_CXX_FLAGS "-Xclang -fopenmp")
-    set(OpenMP_C_FLAGS "-Xclang -fopenmp")
-    set(CHECKED_OPENMP ON CACHE BOOL "already checked for OpenMP")
-    set(OPENMP_FOUND ON CACHE BOOL "OpenMP Support found")
-    if(NOT MKL_FOUND)
-      execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version OUTPUT_VARIABLE clang_version_output)
-      string(REGEX REPLACE ".*InstalledDir: ([^\n]+).*" "\\1" CLANG_BINDIR ${clang_version_output})
-
-      get_filename_component(CLANG_ROOT ${CLANG_BINDIR} DIRECTORY)
-      set(CLANG_OPENMP_LIBRARY "${CLANG_ROOT}/lib/libiomp5md.lib")
-
-      if(NOT TARGET caffe2::openmp)
-        add_library(caffe2::openmp INTERFACE IMPORTED)
-      endif()
-
-      set_property(
-        TARGET caffe2::openmp PROPERTY INTERFACE_LINK_LIBRARIES
-        ${CLANG_OPENMP_LIBRARY})
-
-      list(APPEND Caffe2_PUBLIC_DEPENDENCY_LIBS caffe2::openmp)
-    endif()
-  endif()
-
-  if(WITH_OPENMP AND NOT CHECKED_OPENMP)
-    find_package(OpenMP QUIET)
-    set(CHECKED_OPENMP ON CACHE BOOL "already checked for OpenMP")
-
-    # OPENMP_FOUND is not cached in FindOpenMP.cmake (all other variables are cached)
-    # see https://github.com/Kitware/CMake/blob/master/Modules/FindOpenMP.cmake
-    set(OPENMP_FOUND ${OPENMP_FOUND} CACHE BOOL "OpenMP Support found")
-  endif()
+  find_package(OpenMP QUIET)
 
   if(OPENMP_FOUND)
     message(STATUS "Adding OpenMP CXX_FLAGS: " ${OpenMP_CXX_FLAGS})
@@ -1199,8 +1126,7 @@ if(USE_OPENMP)
     else()
         message(STATUS "Will link against OpenMP libraries: ${OpenMP_CXX_LIBRARIES}")
     endif()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    list(APPEND Caffe2_PRIVATE_DEPENDENCY_LIBS OpenMP::OpenMP_CXX OpenMP::OpenMP_C)
   else()
     message(WARNING "Not compiling with OpenMP. Suppress this warning with -DUSE_OPENMP=OFF")
     caffe2_update_option(USE_OPENMP OFF)
@@ -1557,10 +1483,6 @@ function(add_onnx_tensorrt_subdir)
   set(CUDNN_INCLUDE_DIR "${CUDNN_INCLUDE_PATH}")
   set(CUDNN_LIBRARY "${CUDNN_LIBRARY_PATH}")
   set(CMAKE_VERSION_ORIG "{CMAKE_VERSION}")
-  if(FIND_CUDA_MODULE_DEPRECATED)
-    # TODO: this WAR is for https://github.com/pytorch/pytorch/issues/18524
-    set(CMAKE_VERSION "3.9.0")
-  endif()
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../third_party/onnx-tensorrt EXCLUDE_FROM_ALL)
   set(CMAKE_VERSION "{CMAKE_VERSION_ORIG}")
 endfunction()
