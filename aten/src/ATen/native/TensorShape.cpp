@@ -2642,8 +2642,9 @@ Tensor squeeze_qtensor(const Tensor& self, c10::optional<int64_t> dim) {
   DimVector strides;
   std::tie(sizes, strides) = dim.has_value() ? inferSqueezeGeometry(self, dim.value()) : inferSqueezeGeometry(self);
   if (quantizer->qscheme() == QScheme::PER_CHANNEL_AFFINE) {
-    const auto* per_channel_quantizer = static_cast<at::PerChannelAffineQuantizer*>(quantizer.get());
-    auto axis = per_channel_quantizer->axis();
+    const auto& per_channel_quantizer =
+        dynamic_cast<at::PerChannelAffineQuantizer&>(*quantizer);
+    auto axis = per_channel_quantizer.axis();
     int64_t shift = 0;
     integer_range<int64_t> dims = dim.has_value() ? integer_range<int64_t>{dim.value(), dim.value() + 1} : c10::irange(self.dim());
     for (const auto d : dims) {
@@ -2655,8 +2656,8 @@ Tensor squeeze_qtensor(const Tensor& self, c10::optional<int64_t> dim) {
       }
     }
     axis -= shift;
-    quantizer = make_per_channel_affine_quantizer(per_channel_quantizer->scales(),
-                                                  per_channel_quantizer->zero_points(),
+    quantizer = make_per_channel_affine_quantizer(per_channel_quantizer.scales(),
+                                                  per_channel_quantizer.zero_points(),
                                                   axis,
                                                   quantizer->scalar_type());
   }
@@ -2788,15 +2789,17 @@ Tensor unsqueeze_quantized(const Tensor& self, int64_t dim) {
   auto g = inferUnsqueezeGeometry(self, dim);
   auto quantizer = get_qtensorimpl(self)->quantizer();
   if (quantizer->qscheme() == QScheme::PER_CHANNEL_AFFINE) {
-    const auto* per_channel_quantizer = static_cast<at::PerChannelAffineQuantizer*>(quantizer.get());
-    auto axis = per_channel_quantizer->axis();
+    const auto& per_channel_quantizer =
+        dynamic_cast<at::PerChannelAffineQuantizer&>(*quantizer);
+    auto axis = per_channel_quantizer.axis();
     if (axis >= dim) {
       axis += 1;
     }
-    quantizer = make_per_channel_affine_quantizer(per_channel_quantizer->scales(),
-                                                  per_channel_quantizer->zero_points(),
-                                                  axis,
-                                                  quantizer->scalar_type());
+    quantizer = make_per_channel_affine_quantizer(
+        per_channel_quantizer.scales(),
+        per_channel_quantizer.zero_points(),
+        axis,
+        quantizer->scalar_type());
   }
   return make_qtensor(self, g.sizes, g.strides, quantizer);
 }

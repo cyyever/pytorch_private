@@ -86,7 +86,7 @@ Tensor Adam::step(LossClosure closure) {
       TORCH_CHECK(!grad.is_sparse(), "Adam does not support sparse gradients" /*, please consider SparseAdam instead*/);
       auto param_state =
           state_.find(c10::guts::to_string(p.unsafeGetTensorImpl()));
-      auto& options = static_cast<AdamOptions&>(group.options());
+      auto& options = dynamic_cast<AdamOptions&>(group.options());
 
       // State initialization
       if (param_state == state_.end()) {
@@ -104,7 +104,7 @@ Tensor Adam::step(LossClosure closure) {
             std::move(state);
       }
 
-      auto& state = static_cast<AdamParamState&>(
+      auto& state = dynamic_cast<AdamParamState&>(
           *state_[c10::guts::to_string(p.unsafeGetTensorImpl())]);
       auto& exp_avg = state.exp_avg();
       auto& exp_avg_sq = state.exp_avg_sq();

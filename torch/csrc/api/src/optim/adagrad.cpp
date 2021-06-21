@@ -80,9 +80,9 @@ Tensor Adagrad::step(LossClosure closure) {
           state_[c10::guts::to_string(p.unsafeGetTensorImpl())] != nullptr,
           "state found NULL for the Tensor ",
           p);
-      auto& state = static_cast<AdagradParamState&>(
+      auto& state = dynamic_cast<AdagradParamState&>(
           *state_[c10::guts::to_string(p.unsafeGetTensorImpl())]);
-      auto& options = static_cast<AdagradOptions&>(group.options());
+      auto& options = dynamic_cast<AdagradOptions&>(group.options());
 
       state.step(state.step() + 1);
 

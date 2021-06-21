@@ -132,9 +132,11 @@ PyObject* THPCppFunction_next_functions(THPCppFunction* self, PyObject* hook) {
 
 PyObject* THPCppFunction_metadata(THPCppFunction* self, void* _unused) {
   auto metadata =
-      static_cast<PyAnomalyMetadata*>(self->cdata->metadata())->dict();
+      dynamic_cast<PyAnomalyMetadata*>(self->cdata->metadata())->dict();
 
-  Py_INCREF(metadata);
+  if (metadata) {
+    Py_INCREF(metadata);
+  }
   return metadata;
 }
 

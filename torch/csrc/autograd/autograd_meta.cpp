@@ -199,7 +199,7 @@ void AutogradMeta::set_fw_grad(
         ".");
 
     if (is_inplace_op && is_view_) {
-      auto this_view_meta = static_cast<DifferentiableViewMeta*>(this);
+      auto& this_view_meta = dynamic_cast<DifferentiableViewMeta&>(*this);
 
       // For inplace ops on a Tensor that does not already have a forward grad
       // and is a view, we propagate the tangent to the base and ensure that the
@@ -211,8 +211,8 @@ void AutogradMeta::set_fw_grad(
       //   - Take a view of the base's forward grad
       //   - Copy the given new_grad into this view
       //   - Use this view as the new new_grad
-      if (this_view_meta->has_fw_view()) {
-        auto view_info = this_view_meta->get_forward_view();
+      if (this_view_meta.has_fw_view()) {
+        auto view_info = this_view_meta.get_forward_view();
         auto& base = view_info.base_;
 
         if (!base._fw_grad(level).defined()) {
@@ -286,7 +286,7 @@ const Variable& AutogradMeta::fw_grad(
     // has been defined by an inplace operation.
     // This ensure that case 5 from [Forward Grad View/inplace] above works fine
     auto const_view_meta =
-        static_cast<const torch::autograd::DifferentiableViewMeta*>(this);
+        dynamic_cast<const torch::autograd::DifferentiableViewMeta*>(this);
     // This is ok to do as we ONLY modify fw_grad_ and this field is properly
     // locked in all methods
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
