@@ -123,7 +123,7 @@ struct TORCH_API Generator {
   }
 
   template<typename T>
-  T* get() const { return static_cast<T*>(impl_.get()); }
+  T* get() const { return dynamic_cast<T*>(impl_.get()); }
 
   Generator clone() const {
     return Generator(impl_->clone());

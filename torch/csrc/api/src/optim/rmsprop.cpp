@@ -87,7 +87,7 @@ Tensor RMSprop::step(LossClosure closure) {
           !grad.is_sparse(), "RMSprop does not support sparse gradients");
       auto param_state =
           state_.find(c10::guts::to_string(p.unsafeGetTensorImpl()));
-      auto& options = static_cast<RMSpropOptions&>(group.options());
+      auto& options = dynamic_cast<RMSpropOptions&>(group.options());
 
       // State initialization
       if (param_state == state_.end()) {
@@ -104,7 +104,7 @@ Tensor RMSprop::step(LossClosure closure) {
             std::move(state);
       }
 
-      auto& state = static_cast<RMSpropParamState&>(
+      auto& state = dynamic_cast<RMSpropParamState&>(
           *state_[c10::guts::to_string(p.unsafeGetTensorImpl())]);
       auto& square_avg = state.square_avg();
       auto alpha = options.alpha();

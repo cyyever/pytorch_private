@@ -384,7 +384,7 @@ DifferentiableViewMeta* get_view_autograd_meta(const at::TensorBase& self) {
   // NB: return nullptr if self is not a view
   AutogradMeta* meta = get_autograd_meta(self);
   if (meta && meta->is_view_) {
-    return static_cast<DifferentiableViewMeta*>(meta);
+    return dynamic_cast<DifferentiableViewMeta*>(meta);
   } else {
     return nullptr;
   }
