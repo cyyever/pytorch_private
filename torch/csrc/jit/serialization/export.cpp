@@ -71,7 +71,7 @@ void validateBlock(
       "\n\nGraph we tried to export:\n" + b->owningGraph()->toString());
     // Special error messages for certain types of operators
     if (node->kind() == prim::PythonOp) {
-      auto py_node = static_cast<PythonOp*>(node);
+      auto py_node = dynamic_cast<PythonOp*>(node);
       FAIL_EXPORT(
           "Couldn't export Python operator " + py_node->name() +
           "\n\nDefined at:\n" + getNodeStackTraceString(node))
