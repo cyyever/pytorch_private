@@ -1313,6 +1313,7 @@ endif()
 
 # ---[ CUB
 if(USE_CUDA)
+  add_compile_definitions(THRUST_IGNORE_CUB_VERSION_CHECK)
   find_package(CUB)
   if(CUB_FOUND)
     include_directories(SYSTEM ${CUB_INCLUDE_DIRS})
