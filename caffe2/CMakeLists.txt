@@ -257,44 +257,6 @@ if(PRINT_CMAKE_DEBUG_INFO)
 
 endif()
 
-if(NOT INTERN_BUILD_MOBILE OR BUILD_CAFFE2_MOBILE)
-  # ---[ List of libraries to link with
-  add_library(caffe2_protos STATIC $<TARGET_OBJECTS:Caffe2_PROTO>)
-  add_dependencies(caffe2_protos Caffe2_PROTO)
-  # If we are going to link protobuf locally inside caffe2 libraries, what we will do is
-  # to create a helper static library that always contains libprotobuf source files, and
-  # link the caffe2 related dependent libraries to it.
-  target_include_directories(caffe2_protos INTERFACE $<INSTALL_INTERFACE:include>)
-  # Reason for this public dependency is as follows:
-  # (1) Strictly speaking, we should not expose any Protobuf related functions. We should
-  #     only use function interfaces wrapped with our own public API, and link protobuf
-  #     locally.
-  # (2) However, currently across the Caffe2 codebase, we have extensive use of protobuf
-  #     functionalities. For example, not only libcaffe2.so uses it, but also other
-  #     binaries such as python extensions etc. As a result, we will have to have a
-  #     transitive dependency to libprotobuf.
-  #
-  # Good thing is that, if we specify CAFFE2_LINK_LOCAL_PROTOBUF, then we do not need to
-  # separately deploy protobuf binaries - libcaffe2.so will contain all functionalities
-  # one needs. One can verify this via ldd.
-  #
-  # TODO item in the future includes:
-  # (1) Enable using lite protobuf
-  # (2) Properly define public API that do not directly depend on protobuf itself.
-  # (3) Expose the libprotobuf.a file for dependent libraries to link to.
-  #
-  # What it means for users/developers?
-  # (1) Users: nothing affecting the users, other than the fact that CAFFE2_LINK_LOCAL_PROTOBUF
-  #     avoids the need to deploy protobuf.
-  # (2) Developers: if one simply uses core caffe2 functionality without using protobuf,
-  #     nothing changes. If one has a dependent library that uses protobuf, then one needs to
-  #     have the right protobuf version as well as linking to libprotobuf.a.
-  target_link_libraries(caffe2_protos PUBLIC protobuf::libprotobuf)
-  if(NOT BUILD_SHARED_LIBS)
-    install(TARGETS caffe2_protos ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-  endif()
-endif()
-
 # ==========================================================
 # formerly-libtorch
 # ==========================================================
@@ -1311,16 +1273,6 @@ if(USE_DISTRIBUTED)
   # can only be compiled with USE_TENSORPIPE is set.
   if(USE_TENSORPIPE)
     target_compile_definitions(torch_cpu PUBLIC USE_TENSORPIPE)
-  endif()
-endif()
-
-if(NOT INTERN_BUILD_MOBILE OR BUILD_CAFFE2_MOBILE)
-  caffe2_interface_library(caffe2_protos caffe2_protos_whole)
-  target_link_libraries(torch_cpu PRIVATE caffe2_protos_whole)
-  if(${CAFFE2_LINK_LOCAL_PROTOBUF})
-    target_link_libraries(torch_cpu INTERFACE protobuf::libprotobuf)
-  else()
-    target_link_libraries(torch_cpu PUBLIC protobuf::libprotobuf)
   endif()
 endif()
 
