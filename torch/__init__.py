@@ -826,10 +826,6 @@ from . import _torch_docs, _tensor_docs, _storage_docs
 del _torch_docs, _tensor_docs, _storage_docs
 
 
-def compiled_with_cxx11_abi():
-    r"""Returns whether PyTorch was built with _GLIBCXX_USE_CXX11_ABI=1"""
-    return _C._GLIBCXX_USE_CXX11_ABI
-
 
 # Import the ops "namespace"
 from torch._ops import ops
