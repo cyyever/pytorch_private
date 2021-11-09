@@ -15,7 +15,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # One variable that determines whether the current cmake process is being run
 # with the main Caffe2 library. This is useful for building modules - if
