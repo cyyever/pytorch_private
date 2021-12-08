@@ -62,8 +62,7 @@ TensorNames::TensorNames(ArrayRef<Dimname> names, int64_t start, int64_t end) {
 }
 
 TensorNames& TensorNames::unifyFromRightInplace(const TensorNames& other, const char* op_name) {
-  // NOLINTNEXTLINE(bugprone-narrowing-conversions,clang-diagnostic-absolute-value,cppcoreguidelines-narrowing-conversions)
-  size_t size_diff = std::labs(names_.size() - other.names_.size());
+  size_t size_diff = names_.size() - other.names_.size();
 
   if (names_.size() > other.names_.size()) {
     for (const auto idx : c10::irange(size_diff, names_.size())) {
