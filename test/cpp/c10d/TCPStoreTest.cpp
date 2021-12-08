@@ -79,7 +79,7 @@ void testHelper(const std::string& prefix = "") {
 
   // Hammer on TCPStore
   std::vector<std::thread> threads;
-  const auto numIterations = 1000;
+  constexpr auto numIterations = 1000;
   c10d::test::Semaphore sem1, sem2;
 
   c10d::TCPStoreOptions opts{};
@@ -104,10 +104,9 @@ void testHelper(const std::string& prefix = "") {
                                       &sem2,
                                       &clientStores,
                                       i,
-                                      &expectedCounterRes,
-                                      &numIterations,
-                                      &numThreads] {
+                                      &expectedCounterRes] {
       for (const auto j : c10::irange(numIterations)) {
+        (void)j;
         clientStores[i]->add("counter", 1);
       }
       // Let each thread set and get key on its client store
@@ -167,9 +166,7 @@ void testWatchKeyCallback(const std::string& prefix = "") {
   const int keyChangeOperation = 3;
   c10d::WatchKeyCallback callback =
       [&numCallbacksExecuted,
-       &numCallbacksExecutedPromise,
-       &numThreads,
-       &keyChangeOperation](
+       &numCallbacksExecutedPromise](
           c10::optional<std::string> /* unused */,
           c10::optional<std::string> /* unused */) {
         numCallbacksExecuted++;
@@ -214,7 +211,6 @@ void testWatchKeyCallback(const std::string& prefix = "") {
                                       &internalKey,
                                       &internalKeyCount,
                                       &keyChangeOperationCount,
-                                      &keyChangeOperation,
                                       i] {
       // Let each thread set and get key on its client store
       std::string key = internalKey + std::to_string(i);
@@ -275,8 +271,7 @@ void testKeyChangeHelper(
   c10d::WatchKeyCallback callback = [expectedOldValue,
                                      expectedNewValue,
                                      &callbackPromise,
-                                     &eptr,
-                                     &key](
+                                     &eptr](
                                         c10::optional<std::string> oldValue,
                                         c10::optional<std::string> newValue) {
     try {
