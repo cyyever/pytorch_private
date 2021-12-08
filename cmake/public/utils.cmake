@@ -446,6 +446,7 @@ function(torch_compile_options libname)
         # Clang has an unfixed bug leading to spurious missing braces
         # warnings, see https://bugs.llvm.org/show_bug.cgi?id=21629
         -Wno-missing-braces
+        -Wno-range-loop-analysis
         )
 
       if(NOT APPLE)
