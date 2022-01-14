@@ -1,5 +1,6 @@
 #pragma once
 
+#include <initializer_list>
 #include <c10/util/irange.h>
 
 /// This macro enables a module with default arguments in its forward method
