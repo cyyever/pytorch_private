@@ -1869,7 +1869,7 @@ if(BUILD_PYTHON)
       target_link_libraries(caffe2_pybind11_state PRIVATE caffe2::mkldnn)
   endif()
   if(WIN32)
-    target_link_libraries(caffe2_pybind11_state PRIVATE onnx_proto)
+    target_link_libraries(caffe2_pybind11_state ${PYTHON_LIBRARIES})
   endif(WIN32)
 
   # Install caffe2_pybind11_state(_gpu|hip) in site-packages/caffe2/python,
@@ -1901,7 +1901,7 @@ if(BUILD_PYTHON)
     target_link_libraries(caffe2_pybind11_state_gpu PRIVATE
         torch_library python::python pybind::pybind11)
     if(WIN32)
-      target_link_libraries(caffe2_pybind11_state_gpu PRIVATE onnx_proto)
+      target_link_libraries(caffe2_pybind11_state_gpu ${PYTHON_LIBRARIES})
     endif(WIN32)
 
     # Install with same rpath as non-gpu caffe2_pybind11_state
