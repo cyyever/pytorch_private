@@ -979,7 +979,7 @@ list(APPEND Caffe2_DEPENDENCY_LIBS fp16)
 
 # ---[ Python + Numpy
 if(BUILD_PYTHON)
-  find_package(Python)
+  find_package(Python COMPONENTS Interpreter Development NumPy)
 
   # When building pytorch, we pass this in directly from setup.py, and
   # don't want to overwrite it because we trust python more than cmake
