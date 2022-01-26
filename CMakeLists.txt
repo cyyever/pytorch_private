@@ -289,17 +289,6 @@ option(WERROR "Build with -Werror supported by the compiler" OFF)
 option(USE_COREML_DELEGATE "Use the CoreML backend through delegate APIs" OFF)
 option(USE_PER_OPERATOR_HEADERS "Whether ATen should generate separate headers for each operator" ON)
 
-
-# if(USE_CUDA)
-#   include(CheckLanguage)
-#   check_language(CUDA)
-#   if(CMAKE_CUDA_COMPILER)
-#     enable_language(CUDA)
-#   else()
-#     message(FATAL_ERROR "No CUDA support")
-#   endif()
-# endif()
-
 if(USE_CCACHE)
   find_program(CCACHE_PROGRAM ccache)
   if(CCACHE_PROGRAM)
@@ -622,16 +611,6 @@ endif()
 
 include(cmake/Dependencies.cmake)
 
-if(USE_CUDA AND (CMAKE_CUDA_COMPILER_VERSION VERSION_LESS 10.2) AND (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows"))
-  # CUDA < 10.2 doesn't support compiling and extracting header dependencies in
-  # one call, so instead CMake calls nvcc twice with && in between.
-  # However, on windows cmd.exe has a 8191 character limit for commands which we
-  # start hitting. This moves most argments into a file to avoid going over the limit
-
-  set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_OBJECTS ON)
-  set(CMAKE_NINJA_FORCE_RESPONSE_FILE ON CACHE INTERNAL "")
-endif()
-
 if(USE_FBGEMM)
   string(APPEND CMAKE_CXX_FLAGS " -DUSE_FBGEMM")
 endif()
@@ -881,16 +860,6 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0.0)
   string(APPEND CMAKE_CXX_FLAGS " -Wno-stringop-overflow")
-endif()
-
-if(ANDROID AND (NOT ANDROID_DEBUG_SYMBOLS))
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    string(APPEND CMAKE_CXX_FLAGS " -s")
-  elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    string(APPEND CMAKE_CXX_FLAGS " -g0")
-  else()
-    string(APPEND CMAKE_EXE_LINKER_FLAGS " -s")
-  endif()
 endif()
 
 if(NOT APPLE AND UNIX)

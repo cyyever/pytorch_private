@@ -1051,11 +1051,6 @@ if(USE_OPENMP)
 endif()
 
 
-# ---[ Android specific ones
-if(ANDROID)
-  list(APPEND Caffe2_DEPENDENCY_LIBS log)
-endif()
-
 # ---[ LLVM
 if(USE_LLVM)
   message(STATUS "Looking for LLVM in ${USE_LLVM}")
@@ -1290,18 +1285,6 @@ if(USE_PROF)
   endif()
 endif()
 
-if(USE_SNPE AND ANDROID)
-  if(SNPE_LOCATION AND SNPE_HEADERS)
-    message(STATUS "Using SNPE location specified by -DSNPE_LOCATION: " ${SNPE_LOCATION})
-    message(STATUS "Using SNPE headers specified by -DSNPE_HEADERS: " ${SNPE_HEADERS})
-    include_directories(SYSTEM ${SNPE_HEADERS})
-    add_library(snpe SHARED IMPORTED)
-    set_property(TARGET snpe PROPERTY IMPORTED_LOCATION ${SNPE_LOCATION})
-    list(APPEND Caffe2_DEPENDENCY_LIBS snpe)
-  else()
-    caffe2_update_option(USE_SNPE OFF)
-  endif()
-endif()
 
 if(USE_METAL)
   if(NOT IOS)
@@ -1310,10 +1293,6 @@ if(USE_METAL)
   endif()
 endif()
 
-if(USE_NNAPI AND NOT ANDROID)
-  message(WARNING "NNApi is only used in android builds.")
-  caffe2_update_option(USE_NNAPI OFF)
-endif()
 
 if(NOT INTERN_BUILD_MOBILE AND BUILD_CAFFE2_OPS)
   if(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO)
