@@ -110,7 +110,7 @@ endif()
 
 # ---[ EIGEN
 find_package(Eigen3 REQUIRED)
-if(EIGEN3_FOUND)
+if(TARGET Eigen3::Eigen)
   message(STATUS "Found system Eigen at " ${EIGEN3_INCLUDE_DIR})
 else()
   message(FATAL_ERROR "Did not find system Eigen.")
