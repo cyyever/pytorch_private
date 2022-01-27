@@ -5,6 +5,11 @@
 #include <ostream>
 #include <fstream>
 #include <algorithm>
+#if defined(__linux__)
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
 
 #include <c10/core/Allocator.h>
 #include <c10/core/CPUAllocator.h>
@@ -329,15 +334,31 @@ void PyTorchStreamWriter::setup(const string& file_name) {
     CAFFE_THROW("invalid file name: ", file_name);
   }
   if (!writer_func_) {
-    file_stream_.open(
-        file_name,
-        std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
-    valid("opening archive ", file_name.c_str());
-    TORCH_CHECK(file_stream_, "File ", file_name, " cannot be opened.");
-    writer_func_ = [this](const void* buf, size_t nbytes) -> size_t {
-      file_stream_.write(static_cast<const char*>(buf), nbytes);
-      return !file_stream_ ? 0 : nbytes;
-    };
+#if defined(__linux__)
+    if (getenv("TORCH_USE_LINUX_FD")) {
+      fd_ = open(file_name.c_str(), O_CREAT | O_WRONLY | O_TRUNC | O_NOATIME);
+      TORCH_CHECK((fd_ >= 0), "File ", file_name, " cannot be opened.");
+      writer_func_ = [this](const void* buf, size_t nbytes) -> size_t {
+        if (nbytes == 0) {
+          return nbytes;
+        }
+        auto written_bytes = write(fd_, buf, nbytes);
+        TORCH_CHECK((written_bytes >= 0), "File cannot be written." , strerror(errno));
+        return (written_bytes < 0) ? 0 : written_bytes;
+      };
+    }
+#endif
+    if (fd_ < 0) {
+      file_stream_.open(
+          file_name,
+          std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+      valid("opening archive ", file_name.c_str());
+      TORCH_CHECK(file_stream_, "File ", file_name, " cannot be opened.");
+      writer_func_ = [this](const void* buf, size_t nbytes) -> size_t {
+        file_stream_.write(static_cast<const char*>(buf), nbytes);
+        return !file_stream_ ? 0 : nbytes;
+      };
+    }
   }
 
   ar_->m_pIO_opaque = this;
@@ -404,6 +425,10 @@ void PyTorchStreamWriter::writeEndOfFile() {
   valid("writing central directory for archive ", archive_name_.c_str());
   if (file_stream_.is_open()) {
     file_stream_.close();
+  }
+  if (fd_>=0) {
+    close(fd_);
+    fd_ = -1;
   }
 }
 
