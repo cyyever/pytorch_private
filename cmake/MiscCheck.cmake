@@ -230,6 +230,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
       /wd4273 # (1): inconsistent dll linkage. This is related to the
               #      caffe2 FLAGS_* definition using dllimport in header and
               #      dllexport in cc file. The strategy is copied from gflags.
+      /wd4624 #  'c10::trivially_copyable_optimization_optional_base<T>': destructor was implicitly defined as deleted
+      /wd4067 # unexpected tokens following preprocessor directive - expected a newline
+      /wd4068 # unknown pragma 'GCC'
   )
 
   # Make sure windows.h does not include additional headers.
