@@ -1535,6 +1535,20 @@ target_link_libraries(torch_cpu PRIVATE flatbuffers)
 # this we have to preload those libs in a global namespace.
 if(BUILD_SHARED_LIBS)
   add_library(torch_global_deps SHARED ${TORCH_SRC_DIR}/csrc/empty.c)
+  if(USE_ASAN)
+    find_package(GoogleSanitizer)
+    if(TARGET GoogleSanitizer::address)
+      target_link_libraries(torch_global_deps GoogleSanitizer::address)
+    endif()
+  endif()
+
+  if(USE_UBSAN)
+    find_package(GoogleSanitizer)
+    if(TARGET GoogleSanitizer::undefined)
+      target_link_libraries(torch_global_deps GoogleSanitizer::undefined)
+    endif()
+  endif()
+
   if(HAVE_SOVERSION)
     set_target_properties(torch_global_deps PROPERTIES
         VERSION ${TORCH_VERSION} SOVERSION ${TORCH_SOVERSION})
@@ -1555,7 +1569,6 @@ if(BUILD_SHARED_LIBS)
   if(USE_TBB)
     target_link_libraries(torch_global_deps TBB::tbb)
   endif()
-
   install(TARGETS torch_global_deps DESTINATION "${TORCH_INSTALL_LIB_DIR}")
 endif()
 

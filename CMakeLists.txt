@@ -139,6 +139,7 @@ cmake_dependent_option(
 option(USE_CPP_CODE_COVERAGE "Compile C/C++ with code coverage flags" OFF)
 option(COLORIZE_OUTPUT "Colorize output during compilation" ON)
 option(USE_ASAN "Use Address Sanitizer" OFF)
+option(USE_UBSAN "Use UB Sanitizer" OFF)
 option(USE_TSAN "Use Thread Sanitizer" OFF)
 option(USE_CUDA "Use CUDA" ON)
 # BUILD_SPLIT_CUDA must also be exported as an environment variable before building, with
@@ -791,11 +792,6 @@ if(NOT MSVC)
   if(HAS_WERROR_CAST_FUNCTION_TYPE)
     string(APPEND CMAKE_CXX_FLAGS " -Werror=cast-function-type")
   endif()
-endif()
-
-if(USE_ASAN)
-    string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address")
-    string(APPEND CMAKE_LINKER_FLAGS_DEBUG " -fsanitize=address")
 endif()
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
