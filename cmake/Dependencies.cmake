@@ -1748,3 +1748,17 @@ endif()
 
 # Include google/FlatBuffers
 include(${CMAKE_CURRENT_LIST_DIR}/FlatBuffers.cmake)
+
+if(USE_ASAN)
+  find_package(GoogleSanitizer)
+  if(TARGET GoogleSanitizer::address)
+    list(PREPEND Caffe2_PUBLIC_DEPENDENCY_LIBS GoogleSanitizer::address)
+  endif()
+endif()
+
+if(USE_UBSAN)
+  find_package(GoogleSanitizer)
+  if(TARGET GoogleSanitizer::undefined)
+    list(PREPEND Caffe2_PUBLIC_DEPENDENCY_LIBS GoogleSanitizer::undefined)
+  endif()
+endif()
