@@ -7,7 +7,7 @@ import os.path
 import types
 from contextlib import contextmanager
 from pathlib import Path
-from typing import cast, Any, BinaryIO, Callable, Dict, List, Optional, Union
+from typing import cast, Any, BinaryIO, Callable, Dict, List, Optional, Union, Type
 from weakref import WeakValueDictionary
 
 import torch
@@ -26,6 +26,8 @@ from ._package_unpickler import PackageUnpickler
 from .file_structure_representation import Directory, _create_directory_from_file_list
 from .glob_group import GlobPattern
 from .importer import Importer
+from ._zip_file import PackageZipFileReader
+from ._zip_file_torchscript import TorchScriptPackageZipFileReader
 
 
 class PackageImporter(Importer):
@@ -49,8 +51,9 @@ class PackageImporter(Importer):
 
     def __init__(
         self,
-        file_or_buffer: Union[str, torch._C.PyTorchFileReader, Path, BinaryIO],
+        file_or_buffer: Union[str, torch._C.PyTorchFileReader, PackageZipFileReader, Path, BinaryIO],
         module_allowed: Callable[[str], bool] = lambda module_name: True,
+        zip_file_reader_type: Type[PackageZipFileReader] = TorchScriptPackageZipFileReader
     ):
         """Open ``file_or_buffer`` for importing. This checks that the imported package only requires modules
         allowed by ``module_allowed``
@@ -72,12 +75,12 @@ class PackageImporter(Importer):
         elif isinstance(file_or_buffer, (Path, str)):
             self.filename = str(file_or_buffer)
             if not os.path.isdir(self.filename):
-                self.zip_reader = torch._C.PyTorchFileReader(self.filename)
+                self.zip_reader = TorchScriptPackageZipFileReader(self.filename)
             else:
                 self.zip_reader = DirectoryReader(self.filename)
         else:
             self.filename = "<binary>"
-            self.zip_reader = torch._C.PyTorchFileReader(file_or_buffer)
+            self.zip_reader = TorchScriptPackageZipFileReader(file_or_buffer)
         self.root = _PackageNode(None)
         self.modules = {}
         self.extern_modules = self._read_extern()
@@ -183,7 +186,7 @@ class PackageImporter(Importer):
         loaded_storages = {}
         loaded_reduces = {}
         storage_context = torch._C.DeserializationStorageContext()
-
+        #TODO move out and add deprecration warning for this behavior
         def load_tensor(dtype, size, key, location, restore_location):
             name = f"{key}.storage"
 
