@@ -233,6 +233,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
       /wd4624 #  'c10::trivially_copyable_optimization_optional_base<T>': destructor was implicitly defined as deleted
       /wd4067 # unexpected tokens following preprocessor directive - expected a newline
       /wd4068 # unknown pragma 'GCC'
+      /wd4819 #The file contains a character that cannot be represented in the current code page (936)
   )
 
   # Make sure windows.h does not include additional headers.
