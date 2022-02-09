@@ -84,7 +84,7 @@ set(TORCH_PYTHON_INCLUDE_DIRECTORIES
 list(APPEND TORCH_PYTHON_INCLUDE_DIRECTORIES ${LIBSHM_SRCDIR})
 
 set(TORCH_PYTHON_LINK_LIBRARIES
-    python::python
+    Python::Module
     pybind11::pybind11_headers
     shm
     fmt::fmt-header-only

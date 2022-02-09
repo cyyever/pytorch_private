@@ -993,12 +993,6 @@ if(BUILD_PYTHON)
   # don't want to overwrite it because we trust python more than cmake
 
   if(Python_Interpreter_FOUND)
-    add_library(python::python INTERFACE IMPORTED)
-    target_include_directories(python::python SYSTEM INTERFACE ${PYTHON_INCLUDE_DIRS})
-    if(WIN32)
-      target_link_libraries(python::python INTERFACE ${PYTHON_LIBRARIES})
-    endif()
-
     caffe2_update_option(USE_NUMPY OFF)
     if(Python_NumPy_FOUND)
       caffe2_update_option(USE_NUMPY ON)

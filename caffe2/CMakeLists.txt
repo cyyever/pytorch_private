@@ -1912,7 +1912,7 @@ if(BUILD_PYTHON)
     target_include_directories(caffe2_pybind11_state_gpu PRIVATE $<INSTALL_INTERFACE:include>)
     target_include_directories(caffe2_pybind11_state_gpu PRIVATE ${Caffe2_CPU_INCLUDE})
     target_link_libraries(caffe2_pybind11_state_gpu PRIVATE
-        torch_library python::python pybind11::pybind11_headers)
+        torch_library Python::Module pybind11::pybind11_headers)
     if(WIN32)
       target_link_libraries(caffe2_pybind11_state_gpu ${PYTHON_LIBRARIES})
     endif(WIN32)
@@ -1944,7 +1944,7 @@ if(BUILD_PYTHON)
     target_include_directories(caffe2_pybind11_state_hip PRIVATE $<INSTALL_INTERFACE:include>)
     target_include_directories(caffe2_pybind11_state_hip PRIVATE ${Caffe2_CPU_INCLUDE} ${Caffe2_HIP_INCLUDE})
     target_link_libraries(caffe2_pybind11_state_hip PRIVATE
-        torch_library python::python pybind11::pybind11_headers)
+        torch_library Python::Module pybind11::pybind11_headers)
 
     # Install with same rpath as non-hip caffe2_pybind11_state
     set_target_properties(
