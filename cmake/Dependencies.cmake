@@ -991,16 +991,8 @@ if(BUILD_PYTHON)
 
   # When building pytorch, we pass this in directly from setup.py, and
   # don't want to overwrite it because we trust python more than cmake
-  if(Python_NumPy_INCLUDE_DIRS)
-    set(NUMPY_FOUND ON)
-  elseif(USE_NUMPY)
-    find_package(NumPy)
-    if(NOT NUMPY_FOUND)
-      message(WARNING "NumPy could not be found. Not building with NumPy. Suppress this warning with -DUSE_NUMPY=OFF")
-    endif()
-  endif()
 
-  if(PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND)
+  if(Python_Interpreter_FOUND)
     add_library(python::python INTERFACE IMPORTED)
     target_include_directories(python::python SYSTEM INTERFACE ${PYTHON_INCLUDE_DIRS})
     if(WIN32)
@@ -1008,10 +1000,13 @@ if(BUILD_PYTHON)
     endif()
 
     caffe2_update_option(USE_NUMPY OFF)
-    if(NUMPY_FOUND)
+    if(Python_NumPy_FOUND)
       caffe2_update_option(USE_NUMPY ON)
       add_library(numpy::numpy INTERFACE IMPORTED)
-      target_include_directories(numpy::numpy SYSTEM INTERFACE ${NUMPY_INCLUDE_DIR})
+      set_property(TARGET numpy::numpy PROPERTY
+          INTERFACE_INCLUDE_DIRECTORIES ${Python_NumPy_INCLUDE_DIRS})
+      set_property(TARGET numpy::numpy PROPERTY
+        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${Python_NumPy_INCLUDE_DIRS})
     endif()
     # Observers are required in the python build
     caffe2_update_option(USE_OBSERVERS ON)
