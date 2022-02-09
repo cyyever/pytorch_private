@@ -1002,11 +1002,6 @@ if(BUILD_PYTHON)
     caffe2_update_option(USE_NUMPY OFF)
     if(Python_NumPy_FOUND)
       caffe2_update_option(USE_NUMPY ON)
-      add_library(numpy::numpy INTERFACE IMPORTED)
-      set_property(TARGET numpy::numpy PROPERTY
-          INTERFACE_INCLUDE_DIRECTORIES ${Python_NumPy_INCLUDE_DIRS})
-      set_property(TARGET numpy::numpy PROPERTY
-        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${Python_NumPy_INCLUDE_DIRS})
     endif()
     # Observers are required in the python build
     caffe2_update_option(USE_OBSERVERS ON)
@@ -1024,10 +1019,6 @@ endif()
 if(NOT pybind11_FOUND)
   message(FATAL "Cannot find system pybind11")
 endif()
-message(STATUS "pybind11 include dirs: " "${pybind11_INCLUDE_DIRS}")
-add_library(pybind::pybind11 INTERFACE IMPORTED)
-target_include_directories(pybind::pybind11 SYSTEM INTERFACE ${pybind11_INCLUDE_DIRS})
-target_link_libraries(pybind::pybind11 INTERFACE python::python)
 
 # ---[ MPI
 if(USE_MPI)
