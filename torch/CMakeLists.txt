@@ -336,15 +336,11 @@ if(USE_DEPLOY)
   endif()
 
   target_include_directories(torch_python_obj PUBLIC ${TORCH_PYTHON_INCLUDE_DIRECTORIES})
-  target_include_directories(torch_python_obj PRIVATE ../third_party/fmt/include)
+  target_link_libraries(torch_python_obj PRIVATE fmt::fmt-headers-only Python::Module pybind11::pybind11_headers)
 
   # need to specify the dependency so the generated headers exist,
   # missing dependency since torch_python_obj doesn't link onnx, the interpreter lib does.
   add_dependencies(torch_python_obj onnx)
-
-  target_include_directories(torch_python_obj SYSTEM PRIVATE
-      ${PYTHON_INCLUDE_DIRS}
-      ${pybind11_INCLUDE_DIRS})
 
   if(HAVE_SOVERSION)
     set_target_properties(torch_python_obj PROPERTIES
