@@ -107,7 +107,6 @@ TORCH_API std::ostream& operator<<(std::ostream& stream, const Slice& slice);
 // `torch.tensor([1, 2])`) | `torch::tensor({1, 2})`
 struct TORCH_API TensorIndex final {
   // Case 1: `at::indexing::None`
-  // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.UninitializedObject)
   TensorIndex(c10::nullopt_t) : type_(TensorIndexType::None) {}
 
   // Case 2: "..." / `at::indexing::Ellipsis`
@@ -188,8 +187,8 @@ struct TORCH_API TensorIndex final {
   }
 
  private:
-  int64_t integer_;
-  bool boolean_;
+  int64_t integer_{};
+  bool boolean_{};
   Slice slice_;
   Tensor tensor_;
   TensorIndexType type_;

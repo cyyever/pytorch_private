@@ -30,7 +30,6 @@ enum class C10_API_ENUM EventKind : uint16_t {
 
 // To be deprecated, once we switch to Kineto profiling
 struct TORCH_API LegacyEvent {
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
   LegacyEvent(
       EventKind kind,
       at::StringView name,
@@ -51,7 +50,6 @@ struct TORCH_API LegacyEvent {
   }
 
   // Constructor to be used in conjunction with LegacyEvent::fromIValue.
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
   LegacyEvent(
       EventKind kind,
       at::StringView name,
@@ -274,8 +272,8 @@ struct TORCH_API LegacyEvent {
   bool is_async_ = false;
 
   std::vector<std::string> stack_;
-  uint8_t scope_;
-  uint64_t correlation_id_;
+  uint8_t scope_{};
+  uint64_t correlation_id_{};
   // Extra arguments for computing op flops
   std::unordered_map<std::string, c10::IValue> extra_args_;
   uint64_t flops_ = 0;
