@@ -494,18 +494,6 @@ function(torch_compile_options libname)
         $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${private_compile_options}>)
   endif()
 
-  if(NOT WIN32 AND NOT USE_ASAN)
-    # Enable hidden visibility by default to make it easier to debug issues with
-    # TORCH_API annotations. Hidden visibility with selective default visibility
-    # behaves close enough to Windows' dllimport/dllexport.
-    #
-    # Unfortunately, hidden visibility messes up some ubsan warnings because
-    # templated classes crossing library boundary get duplicated (but identical)
-    # definitions. It's easier to just disable it.
-    target_compile_options(${libname} PRIVATE
-        $<$<COMPILE_LANGUAGE:CXX>: -fvisibility=hidden>)
-  endif()
-
   # Use -O2 for release builds (-O3 doesn't improve perf, and -Os results in perf regression)
   target_compile_options(${libname} PRIVATE
       $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:-O2>)

@@ -150,8 +150,7 @@ cmake_dependent_option(
     "BUILD_TEST" OFF)
 option(USE_CPP_CODE_COVERAGE "Compile C/C++ with code coverage flags" OFF)
 option(USE_COLORIZE_OUTPUT "Colorize output during compilation" ON)
-option(USE_ASAN "Use Address+Undefined Sanitizers" OFF)
-option(USE_UBSAN "Use UB Sanitizer" OFF)
+option(USE_SANITIZER "Use Google Sanitizers except TSAN" OFF)
 option(USE_TSAN "Use Thread Sanitizer" OFF)
 option(USE_CUDA "Use CUDA" ON)
 cmake_dependent_option(
