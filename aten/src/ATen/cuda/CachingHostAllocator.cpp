@@ -364,8 +364,8 @@ class CUDAHostAllocator {
 
 static CUDAHostAllocator& getCUDAHostAllocator() {
   // leak and don't worry about shutdown
-  static auto* r = new CUDAHostAllocator();
-  return *r;
+  static CUDAHostAllocator r{};
+  return r;
 }
 
 static void CUDAHostAllocatorDeleter(void* ctx) {
