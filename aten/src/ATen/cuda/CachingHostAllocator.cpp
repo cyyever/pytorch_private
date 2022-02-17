@@ -80,8 +80,8 @@ class EventPool {
   }
 
  private:
-  struct PerDevicePool {
-    alignas(64) std::mutex mutex_;
+  struct alignas(64) PerDevicePool {
+    std::mutex mutex_;
     std::vector<std::unique_ptr<at::cuda::CUDAEvent>> event_pool_;
   };
   std::vector<PerDevicePool> pools_;
