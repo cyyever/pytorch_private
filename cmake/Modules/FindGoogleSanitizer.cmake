@@ -9,6 +9,8 @@
 include_guard(GLOBAL)
 include(FindPackageHandleStandardArgs)
 
+option(NO_VPTR "no vptr sanitizer" OFF)
+
 get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
 set(_source_code
@@ -36,6 +38,9 @@ foreach(sanitizer_name IN ITEMS address thread undefined leak memory)
     else()
       continue()
     endif()
+  endif()
+  if(sanitizer_name STREQUAL "undefined" AND NO_VPTR)
+    LIST(APPEND CMAKE_REQUIRED_FLAGS "-fno-sanitize=vptr")
   endif()
 
   set(CMAKE_REQUIRED_QUIET ON)
@@ -77,8 +82,6 @@ foreach(sanitizer_name IN ITEMS address thread undefined leak memory)
         INTERFACE
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<BOOL:$__CXX_${sanitizer_name}_res>,$<CXX_COMPILER_ID:GNU>>:-lasan>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<BOOL:$__C_${sanitizer_name}_res>,$<C_COMPILER_ID:GNU>>:-lasan>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<BOOL:$__CXX_${sanitizer_name}_res>,$<CXX_COMPILER_ID:Clang>>:-lasan>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<BOOL:$__C_${sanitizer_name}_res>,$<C_COMPILER_ID:Clang>>:-lasan>
       )
     endif()
     if(sanitizer_name STREQUAL "undefined")
@@ -87,8 +90,6 @@ foreach(sanitizer_name IN ITEMS address thread undefined leak memory)
         INTERFACE
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<BOOL:$__CXX_${sanitizer_name}_res>,$<CXX_COMPILER_ID:GNU>>:-lubsan>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<BOOL:$__C_${sanitizer_name}_res>,$<C_COMPILER_ID:GNU>>:-lubsan>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<BOOL:$__CXX_${sanitizer_name}_res>,$<CXX_COMPILER_ID:Clang>>:-lubsan>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<BOOL:$__C_${sanitizer_name}_res>,$<C_COMPILER_ID:Clang>>:-lubsan>
       )
     endif()
   endif()
