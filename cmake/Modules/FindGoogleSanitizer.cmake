@@ -40,7 +40,7 @@ foreach(sanitizer_name IN ITEMS address thread undefined leak memory)
     endif()
   endif()
   if(sanitizer_name STREQUAL "undefined" AND NO_VPTR)
-    LIST(APPEND CMAKE_REQUIRED_FLAGS "-fno-sanitize=vptr")
+    list(APPEND CMAKE_REQUIRED_FLAGS "-fno-sanitize=vptr")
   endif()
 
   set(CMAKE_REQUIRED_QUIET ON)
@@ -82,6 +82,8 @@ foreach(sanitizer_name IN ITEMS address thread undefined leak memory)
         INTERFACE
         $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<BOOL:$__CXX_${sanitizer_name}_res>,$<CXX_COMPILER_ID:GNU>>:-lasan>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<BOOL:$__C_${sanitizer_name}_res>,$<C_COMPILER_ID:GNU>>:-lasan>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<BOOL:$__CXX_${sanitizer_name}_res>,$<CXX_COMPILER_ID:Clang>>:-lclang_rt.asan-x86_64>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<BOOL:$__C_${sanitizer_name}_res>,$<C_COMPILER_ID:Clang>>:-lclang_rt.asan-x86_64>
       )
     endif()
     if(sanitizer_name STREQUAL "undefined")
