@@ -48,10 +48,6 @@ torch_cuda_based_add_library(c10_cuda ${C10_CUDA_SRCS} ${C10_CUDA_HEADERS})
 set(CUDA_LINK_LIBRARIES_KEYWORD)
 # If building shared library, set dllimport/dllexport proper.
 target_compile_options(c10_cuda PRIVATE "-DC10_CUDA_BUILD_MAIN_LIB")
-# Enable hidden visibility if compiler supports it.
-if(${COMPILER_SUPPORTS_HIDDEN_VISIBILITY})
-  target_compile_options(c10_cuda PRIVATE "-fvisibility=hidden")
-endif()
 
 # ---[ Dependency of c10_cuda
 target_link_libraries(c10_cuda PUBLIC c10 torch::cudart)
