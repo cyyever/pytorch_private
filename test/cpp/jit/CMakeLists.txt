@@ -116,6 +116,7 @@ target_compile_definitions(test_jit PRIVATE USE_GTEST)
 if(USE_SYSTEM_ONNX)
   target_link_libraries(test_jit PRIVATE onnx_proto onnx)
 endif()
+target_link_libraries(test_jit PRIVATE protobuf::libprotobuf-lite)
 
 if(USE_MKLDNN)
   target_link_libraries(test_jit PRIVATE caffe2::mkldnn)
