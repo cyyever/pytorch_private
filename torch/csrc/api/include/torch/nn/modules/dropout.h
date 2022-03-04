@@ -22,11 +22,10 @@ class _DropoutNd : public torch::nn::Cloneable<Derived> {
   _DropoutNd(double p) : _DropoutNd(DropoutOptions().p(p)){};
 
   explicit _DropoutNd(const DropoutOptions& options_ = {}) : options(options_) {
-    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
-    reset();
+    _DropoutNd::reset();
   }
 
-  void reset() override {
+  void reset() override final {
     TORCH_CHECK(
         options.p() >= 0. && options.p() <= 1.,
         "dropout probability has to be between 0 and 1, but got ",

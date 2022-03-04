@@ -121,9 +121,7 @@ class TORCH_API RefcountedMapAllocator : private RefcountedMapAllocatorArgCheck,
   int decref();
   void close() override;
 
-  virtual ~RefcountedMapAllocator() {
-    close();
-  }
+  virtual ~RefcountedMapAllocator() { RefcountedMapAllocator::close(); }
 
  protected:
   void checkFlags();
