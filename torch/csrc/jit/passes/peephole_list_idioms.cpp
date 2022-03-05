@@ -160,7 +160,7 @@ struct PeepholeOptimizeListIdiomsImpl {
       std::shared_ptr<Graph> graph,
       bool refine_list_len)
       : graph_(std::move(graph)),
-        aliasDb_(torch::make_unique<AliasDb>(graph_)),
+        aliasDb_(std::make_unique<AliasDb>(graph_)),
         refine_list_len_(refine_list_len) {}
 
   bool run() {

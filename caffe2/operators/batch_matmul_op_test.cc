@@ -11,7 +11,7 @@ namespace {
 class BatchMatMulOpTest : public testing::Test {
  protected:
   void SetUp() override {
-    cpu_context_ = make_unique<CPUContext>(option_);
+    cpu_context_ = std::make_unique<CPUContext>(option_);
     def_.set_name("test");
     def_.set_type("BatchMatMul");
     def_.add_input("A");

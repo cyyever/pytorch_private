@@ -53,7 +53,7 @@ class StatelessDataLoader : public DataLoaderBase<
     }
     if (this->options_.workers == 0) {
       this->main_thread_dataset_ =
-          torch::make_unique<Dataset>(std::move(dataset));
+          std::make_unique<Dataset>(std::move(dataset));
     }
   }
 

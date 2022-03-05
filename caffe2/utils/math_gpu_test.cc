@@ -234,7 +234,7 @@ class GemmBatchedGPUTest
       return;
     }
     option_.set_device_type(PROTO_CUDA);
-    cuda_context_ = make_unique<CUDAContext>(option_);
+    cuda_context_ = std::make_unique<CUDAContext>(option_);
     Blob* X_blob = ws_.CreateBlob("X");
     Blob* W_blob = ws_.CreateBlob("W");
     Blob* Y_blob = ws_.CreateBlob("Y");
@@ -358,7 +358,7 @@ class BroadcastGPUTest : public testing::Test {
       return;
     }
     option_.set_device_type(PROTO_CUDA);
-    cuda_context_ = make_unique<CUDAContext>(option_);
+    cuda_context_ = std::make_unique<CUDAContext>(option_);
     Blob* blob_x = ws_.CreateBlob("X");
     Blob* blob_y = ws_.CreateBlob("Y");
     X_ = BlobGetMutableTensor(blob_x, CUDA);

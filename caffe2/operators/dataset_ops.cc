@@ -921,7 +921,7 @@ class CreateTensorVectorOp final : public Operator<Context> {
   using Operator<Context>::Operator;
 
   bool RunOnDevice() override {
-    auto ptr = make_unique<std::vector<Tensor>>();
+    auto ptr = std::make_unique<std::vector<Tensor>>();
     *OperatorBase::Output<TensorVectorPtr>(TENSOR_VECTOR) = std::move(ptr);
     return true;
   }

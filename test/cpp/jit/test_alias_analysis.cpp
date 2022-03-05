@@ -23,7 +23,7 @@ class TopologicalMoveTest : public ::testing::Test {
  protected:
   TopologicalMoveTest() {
     createGraph();
-    aliasDb = torch::make_unique<AliasDb>(graph);
+    aliasDb = std::make_unique<AliasDb>(graph);
   }
 
   // Nodes are named after their output.

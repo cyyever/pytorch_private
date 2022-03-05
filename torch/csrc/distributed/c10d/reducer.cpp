@@ -184,7 +184,7 @@ Reducer::Reducer(
       // Hook to execute after the gradient accumulator has executed.
       hooks_.emplace_back(
           grad_accumulator->add_post_hook(
-              torch::make_unique<torch::autograd::utils::LambdaPostHook>(
+              std::make_unique<torch::autograd::utils::LambdaPostHook>(
                   [=](const torch::autograd::variable_list& outputs,
                       const torch::autograd::variable_list& /* unused */) {
 #ifndef _WIN32

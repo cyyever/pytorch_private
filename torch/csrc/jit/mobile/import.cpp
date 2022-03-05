@@ -655,7 +655,7 @@ mobile::Module _load_for_mobile_impl(
   }
 
   const size_t model_size = rai != nullptr ? rai->size() : 0;
-  auto reader = torch::make_unique<PyTorchStreamReader>(std::move(rai));
+  auto reader = std::make_unique<PyTorchStreamReader>(std::move(rai));
   BytecodeDeserializer deserializer(std::move(reader), module_load_options);
 
   std::string error_message;
@@ -703,7 +703,7 @@ void _load_extra_only_for_mobile(
   if (observer) {
     observer->onEnterLoadModel(instance_key);
   }
-  auto reader = torch::make_unique<PyTorchStreamReader>(std::move(rai));
+  auto reader = std::make_unique<PyTorchStreamReader>(std::move(rai));
   BytecodeDeserializer deserializer(std::move(reader));
   deserializer.deserialize_only_extra(device, extra_files);
 }

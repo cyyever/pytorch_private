@@ -57,7 +57,7 @@ class BlobsQueueDBCursor : public Cursor {
   }
 
   void Next() override {
-    unique_ptr<Blob> blob = make_unique<Blob>();
+    unique_ptr<Blob> blob = std::make_unique<Blob>();
     vector<Blob*> blob_vector{blob.get()};
     auto success = queue_->blockingRead(blob_vector, timeout_secs_);
     if (!success) {

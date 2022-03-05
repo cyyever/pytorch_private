@@ -116,7 +116,7 @@ struct AnyModuleHolder : public AnyModulePlaceholder {
   }
 
   std::unique_ptr<AnyModulePlaceholder> copy() const override {
-    return torch::make_unique<AnyModuleHolder>(*this);
+    return std::make_unique<AnyModuleHolder>(*this);
   }
 
   std::unique_ptr<AnyModulePlaceholder> clone_module(

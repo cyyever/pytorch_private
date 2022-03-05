@@ -1282,7 +1282,7 @@ void addGlobalMethods(py::module& m) {
 #define REGISTER_PYTHON_EXPOSED_OBSERVER(ob_type)             \
   {                                                           \
     if (observer_type.compare(#ob_type) == 0) {               \
-      unique_ptr<ob_type> net_ob = make_unique<ob_type>(net); \
+      unique_ptr<ob_type> net_ob = std::make_unique<ob_type>(net); \
       observer = net->AttachObserver(std::move(net_ob));      \
     }                                                         \
   }

@@ -16,7 +16,7 @@ class BatchMatMulOpGPUTest : public testing::Test {
       return;
     }
     option_.set_device_type(PROTO_CUDA);
-    cuda_context_ = make_unique<CUDAContext>(option_);
+    cuda_context_ = std::make_unique<CUDAContext>(option_);
     def_.set_name("test");
     def_.set_type("BatchMatMul");
     def_.add_input("A");

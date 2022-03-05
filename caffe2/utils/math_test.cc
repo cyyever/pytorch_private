@@ -173,7 +173,7 @@ class GemmBatchedTest
     : public testing::TestWithParam<testing::tuple<bool, bool>> {
  protected:
   void SetUp() override {
-    cpu_context_ = make_unique<CPUContext>(option_);
+    cpu_context_ = std::make_unique<CPUContext>(option_);
     ReinitializeTensor(
         &X_, std::vector<int64_t>{3, 5, 10}, at::dtype<float>().device(CPU));
     ReinitializeTensor(
@@ -439,7 +439,7 @@ namespace {
 class BroadcastTest : public testing::Test {
  protected:
   void SetUp() override {
-    cpu_context_ = make_unique<CPUContext>(option_);
+    cpu_context_ = std::make_unique<CPUContext>(option_);
   }
 
   void RunBroadcastTest(
@@ -506,7 +506,7 @@ TEST_F(BroadcastTest, BroadcastFloatTest) {
 class RandFixedSumTest : public testing::Test {
  protected:
   void SetUp() override {
-    cpu_context_ = make_unique<CPUContext>(option_);
+    cpu_context_ = std::make_unique<CPUContext>(option_);
   }
   // NOLINTNEXTLINE(cppcoreguidelines-non-private-member-variables-in-classes)
   DeviceOption option_;
