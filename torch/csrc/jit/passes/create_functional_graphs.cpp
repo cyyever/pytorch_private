@@ -28,7 +28,7 @@ struct FunctionalGraphSlicer {
     // subgraphs, invalidating the AliasDb, so we need to do our analysis
     // first.
     for (size_t i = 0; i < MAX_NUM_ITERATIONS && changed; ++i) {
-      aliasDb_ = torch::make_unique<AliasDb>(graph_);
+      aliasDb_ = std::make_unique<AliasDb>(graph_);
       AnalyzeFunctionalSubset(graph_->block());
       changed = CreateFunctionalGraphsImpl(graph_->block());
     }

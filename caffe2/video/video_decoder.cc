@@ -70,7 +70,7 @@ void VideoDecoder::getAudioSample(
       memcpy(buffer.get(), output, sample_size);
       av_freep(&output);
 
-      unique_ptr<DecodedAudio> audio_sample = make_unique<DecodedAudio>();
+      unique_ptr<DecodedAudio> audio_sample = std::make_unique<DecodedAudio>();
       audio_sample->dataSize_ = data_size;
       audio_sample->outSampleSize_ = out_samples * c->channels;
       audio_sample->audio_data_ = std::move(buffer);
@@ -603,7 +603,7 @@ void VideoDecoder::decodeLoop(
                   rgbFrame->data,
                   rgbFrame->linesize);
 
-              unique_ptr<DecodedFrame> frame = make_unique<DecodedFrame>();
+              unique_ptr<DecodedFrame> frame = std::make_unique<DecodedFrame>();
               frame->width_ = outWidth;
               frame->height_ = outHeight;
               frame->data_ = move(buffer);

@@ -875,7 +875,7 @@ TEST(DataTest, DistributedRandomSamplerMultiReplicaProduceCorrectSamples) {
 
     for (const auto i : c10::irange(num_replicas)) {
       samplers.emplace_back(
-          torch::make_unique<samplers::DistributedRandomSampler>(
+          std::make_unique<samplers::DistributedRandomSampler>(
               sample_count, num_replicas, i, allow_duplicates));
     }
 
@@ -972,7 +972,7 @@ TEST(DataTest, DistributedSequentialSamplerMultiReplicaProduceCorrectSamples) {
 
     for (const auto i : c10::irange(num_replicas)) {
       samplers.emplace_back(
-          torch::make_unique<samplers::DistributedSequentialSampler>(
+          std::make_unique<samplers::DistributedSequentialSampler>(
               sample_count, num_replicas, i, allow_duplicates));
     }
 

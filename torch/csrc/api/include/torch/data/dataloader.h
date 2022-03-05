@@ -23,7 +23,7 @@ torch::disable_if_t<
     Dataset::is_stateful,
     std::unique_ptr<StatelessDataLoader<Dataset, Sampler>>>
 make_data_loader(Dataset dataset, Sampler sampler, DataLoaderOptions options) {
-  return torch::make_unique<StatelessDataLoader<Dataset, Sampler>>(
+  return std::make_unique<StatelessDataLoader<Dataset, Sampler>>(
       // NOLINTNEXTLINE(performance-move-const-arg)
       std::move(dataset),
       std::move(sampler),
@@ -57,7 +57,7 @@ template <typename Dataset, typename = torch::enable_if_t<Dataset::is_stateful>>
 std::unique_ptr<StatefulDataLoader<Dataset>> make_data_loader(
     Dataset dataset,
     DataLoaderOptions options = DataLoaderOptions()) {
-  return torch::make_unique<StatefulDataLoader<Dataset>>(
+  return std::make_unique<StatefulDataLoader<Dataset>>(
       // NOLINTNEXTLINE(performance-move-const-arg)
       std::move(dataset),
       std::move(options));

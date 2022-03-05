@@ -20,7 +20,7 @@ struct PeepholeOptimizeAliasSensitiveImpl {
       std::shared_ptr<Graph> graph,
       bool shape_peepholes)
       : graph_(std::move(graph)),
-        aliasDb_(torch::make_unique<AliasDb>(graph_)) {
+        aliasDb_(std::make_unique<AliasDb>(graph_)) {
     shape_peepholes_ = shape_peepholes;
   }
 

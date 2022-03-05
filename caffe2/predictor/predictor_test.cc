@@ -134,7 +134,7 @@ const char* metaSpec = R"DOC(
 std::unique_ptr<Blob> randomTensor(
     const std::vector<int64_t>& dims,
     CPUContext* ctx) {
-  auto blob = make_unique<Blob>();
+  auto blob = std::make_unique<Blob>();
   auto* t = BlobGetMutableTensor(blob.get(), CPU);
   t->Resize(dims);
   math::RandUniform<float, CPUContext>(

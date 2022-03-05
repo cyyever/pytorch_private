@@ -71,7 +71,7 @@ bool fuseConvBNHelper(repr::NNModule* nn, caffe2::Workspace* ws) {
       while (true) {
         auto convBiasName = convName + "_bias" + to_string(convOrder);
         if (!ws->HasBlob(convBiasName)) {
-          auto convBiasTensor = make_unique<repr::Tensor>(convBiasName);
+          auto convBiasTensor = std::make_unique<repr::Tensor>(convBiasName);
           convBiasTensor->setType(repr::Tensor::DataType::Float);
           auto convBiasNode = nn->dataFlow.createNode(
               unique_dyn_cast<repr::NeuralNetData>(convBiasTensor));

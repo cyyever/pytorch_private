@@ -78,7 +78,7 @@ struct TORCH_API GraphFunction : public Function {
   }
 
   Function& setSchema(FunctionSchema schema) override {
-    schema_ = make_unique<FunctionSchema>(std::move(schema));
+    schema_ = std::make_unique<FunctionSchema>(std::move(schema));
     return *this;
   }
 

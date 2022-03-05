@@ -1412,7 +1412,7 @@ void GraphTask::init_to_execute(
       // In terms of populating the rest of exec_info though, you can basically
       // think of this as the same as setting `needed_` is true directly.
       if (!info.captures_) {
-        info.captures_ = make_unique<std::vector<ExecInfo::Capture>>();
+        info.captures_ = std::make_unique<std::vector<ExecInfo::Capture>>();
       }
       info.captures_->emplace_back(output_edge.input_nr, output_idx++);
     }
