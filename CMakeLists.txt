@@ -493,12 +493,6 @@ if(MSVC)
     endif()
   endforeach(flag_var)
 
-  foreach(flag_var
-      CMAKE_SHARED_LINKER_FLAGS CMAKE_STATIC_LINKER_FLAGS
-      CMAKE_EXE_LINKER_FLAGS CMAKE_MODULE_LINKER_FLAGS)
-    string(APPEND ${flag_var} " /ignore:4049 /ignore:4217 /ignore:4099")
-  endforeach(flag_var)
-
   # Try harder
   string(APPEND CMAKE_CUDA_FLAGS " -Xcompiler /w -w")
 endif(MSVC)
@@ -902,7 +896,6 @@ if(APPLE)
     endif()
     string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-private-field")
     string(APPEND CMAKE_CXX_FLAGS " -Wno-missing-braces")
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-c++14-extensions")
     string(APPEND CMAKE_CXX_FLAGS " -Wno-constexpr-not-const")
 endif()
 
