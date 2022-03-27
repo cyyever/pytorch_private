@@ -925,8 +925,6 @@ if(EMSCRIPTEN)
   string(APPEND CMAKE_CXX_FLAGS " -Wno-implicit-function-declaration -DEMSCRIPTEN -s DISABLE_EXCEPTION_CATCHING=0")
 endif()
 
-append_cxx_flag_if_supported("-Wno-stringop-overflow" CMAKE_CXX_FLAGS)
-
 if(NOT APPLE AND UNIX)
   list(APPEND Caffe2_DEPENDENCY_LIBS dl)
 endif()
@@ -1006,12 +1004,6 @@ if((NOT USE_GLOG) OR (NOT USE_GFLAGS) OR BUILD_CUSTOM_PROTOBUF)
       "Generated cmake files are only fully tested if one builds "
       "with system glog, gflags, and protobuf. Other settings may "
       "generate files that are not well tested.")
-endif()
-
-if(USE_CUDA OR USE_ROCM)
-  # TODO: check if we should include other cuda dependency libraries
-  # to the interface as well.
-
 endif()
 
 # Note(jiayq): when building static libraries, all PRIVATE dependencies
