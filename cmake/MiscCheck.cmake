@@ -146,16 +146,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   )
 
   # Make sure windows.h does not include additional headers.
-  add_definitions("/DWIN32_LEAN_AND_MEAN")
+  add_compile_definitions(WIN32_LEAN_AND_MEAN)
 
   # Make sure windef.h does not define max/min macros.
   # Required by ATen among others.
-  add_definitions("/DNOMINMAX")
-
-  set(CMAKE_SHARED_LINKER_FLAGS
-      "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4049 /ignore:4217 /ignore:4099")
-  set(CMAKE_EXE_LINKER_FLAGS
-      "${CMAKE_EXE_LINKER_FLAGS} /ignore:4049 /ignore:4217 /ignore:4099")
+  add_compile_definitions(NOMINMAX)
+  add_link_options(/ignore:4049 /ignore:4217 /ignore:4099)
 endif()
 
 # ---[ Create CAFFE2_BUILD_SHARED_LIBS for macros.h.in usage.
