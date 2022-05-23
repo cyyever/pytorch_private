@@ -823,14 +823,8 @@ if(NOT MSVC)
     append_cxx_flag_if_supported("-Wunused-lambda-capture" CMAKE_CXX_FLAGS)
     append_cxx_flag_if_supported("-Wunused-local-typedef" CMAKE_CXX_FLAGS)
     append_cxx_flag_if_supported("-Qunused-arguments" CMAKE_CXX_FLAGS)
-    if(${USE_COLORIZE_OUTPUT})
-    endif()
   endif()
 
-  if(${USE_COLORIZE_OUTPUT})
-    append_cxx_flag_if_supported("-fcolor-diagnostics" CMAKE_CXX_FLAGS)
-    append_cxx_flag_if_supported("-fdiagnostics-color=always" CMAKE_CXX_FLAGS)
-  endif()
 
   if((APPLE AND (NOT ("${CLANG_VERSION_STRING}" VERSION_LESS "9.0")))
     OR(CMAKE_COMPILER_IS_GNUCXX
@@ -897,10 +891,10 @@ endif()
 
 # Add code coverage flags to supported compilers
 if(USE_CPP_CODE_COVERAGE)
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     string(APPEND CMAKE_C_FLAGS  " --coverage -fprofile-abs-path")
     string(APPEND CMAKE_CXX_FLAGS  " --coverage -fprofile-abs-path")
-  elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     string(APPEND CMAKE_C_FLAGS  " -fprofile-instr-generate -fcoverage-mapping")
     string(APPEND CMAKE_CXX_FLAGS " -fprofile-instr-generate -fcoverage-mapping")
   else()
