@@ -966,13 +966,7 @@ if(BUILD_PYTHON)
 endif()
 
 # ---[ pybind11
-find_package(pybind11 CONFIG)
-if(NOT pybind11_FOUND)
-  find_package(pybind11)
-endif()
-if(NOT pybind11_FOUND)
-  message(FATAL "Cannot find system pybind11")
-endif()
+find_package(pybind11 CONFIG REQUIRED)
 
 # ---[ MPI
 if(USE_MPI)
