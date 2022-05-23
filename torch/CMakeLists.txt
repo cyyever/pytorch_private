@@ -114,11 +114,6 @@ else()
       -Wno-strict-aliasing)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    list(APPEND TORCH_PYTHON_COMPILE_OPTIONS
-      -Wno-writable-strings)
-endif()
-
 if(USE_ITT)
   list(APPEND TORCH_PYTHON_SRCS
     ${TORCH_SRC_DIR}/csrc/itt.cpp
@@ -331,10 +326,6 @@ if(USE_DEPLOY)
 
   target_compile_options(torch_python_obj PRIVATE ${TORCH_PYTHON_COMPILE_OPTIONS})
 
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options(torch_python_obj PRIVATE -fno-gnu-unique)
-  endif()
-
   target_include_directories(torch_python_obj PUBLIC ${TORCH_PYTHON_INCLUDE_DIRECTORIES})
   target_link_libraries(torch_python_obj PRIVATE fmt::fmt-headers-only Python::Module pybind11::pybind11_headers)
 
@@ -359,11 +350,6 @@ if(USE_DEPLOY)
 
   add_dependencies(torch_python_obj gen_torch_version)
 
-endif()
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  # Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80947 in EmbeddingBag.cpp
-  set_source_files_properties(${TORCH_SRC_DIR}/csrc/utils/throughput_benchmark.cpp PROPERTIES COMPILE_FLAGS -Wno-attributes)
 endif()
 
 # coreml
