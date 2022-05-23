@@ -503,7 +503,7 @@ class build_ext(setuptools.command.build_ext.build_ext):
         else:
             report('-- Not using cuDNN')
         if cmake_cache_vars['USE_CUDA']:
-            report('-- Detected CUDA at ' + cmake_cache_vars['CUDA_TOOLKIT_ROOT_DIR'])
+            report('-- Detected CUDA at ' + cmake_cache_vars['CUDAToolkit_BIN_DIR'])
         else:
             report('-- Not using CUDA')
         if cmake_cache_vars['USE_MKLDNN']:
@@ -856,10 +856,6 @@ def configure_extension_build():
     main_libraries = ['torch_python']
     main_link_args = []
     main_sources = ["torch/csrc/stub.c"]
-
-    if cmake_cache_vars['USE_CUDA']:
-        library_dirs.append(
-            os.path.dirname(cmake_cache_vars['CUDA_CUDA_LIB']))
 
     if build_type.is_debug():
         if IS_WINDOWS:

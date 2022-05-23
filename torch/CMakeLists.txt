@@ -331,7 +331,7 @@ endif()
 
 # Preserve CUDA_GENCODE flags
 if(USE_CUDA)
-  torch_cuda_get_nvcc_gencode_flag(_ARCH_FLAGS)
+  get_target_property(_ARCH_FLAGS_readable torch_python CUDA_ARCHITECTURES)
   set_source_files_properties(${TORCH_SRC_DIR}/csrc/cuda/Module.cpp PROPERTIES COMPILE_FLAGS "-DCUDA_ARCH_FLAGS=\"${_ARCH_FLAGS_readable}\"")
 endif()
 

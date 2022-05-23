@@ -147,7 +147,7 @@ def _check_capability():
             minor = capability[1]
             name = get_device_name(d)
             current_arch = major * 10 + minor
-            min_arch = min((int(arch.split("_")[1]) for arch in torch.cuda.get_arch_list()), default=35)
+            min_arch = min((int(arch) for arch in torch.cuda.get_arch_list()), default=35)
             if current_arch < min_arch:
                 warnings.warn(old_gpu_warn % (d, name, major, minor, min_arch // 10, min_arch % 10))
 
@@ -162,7 +162,7 @@ If you want to use the {} GPU with PyTorch, please check the instructions at htt
     arch_list = get_arch_list()
     if len(arch_list) == 0:
         return
-    supported_sm = [int(arch.split('_')[1]) for arch in arch_list if 'sm_' in arch]
+    supported_sm = [int(arch) for arch in arch_list]
     for idx in range(device_count()):
         cap_major, cap_minor = get_device_capability(idx)
         # NVIDIA GPU compute architectures are backward compatible within major version

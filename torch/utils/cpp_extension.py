@@ -1752,8 +1752,8 @@ def _get_cuda_arch_flags(cflags: Optional[List[str]] = None) -> List[str]:
         # which could be of different types - therefore all archs for visible cards should be included
         for i in range(torch.cuda.device_count()):
             capability = torch.cuda.get_device_capability(i)
-            supported_sm = [int(arch.split('_')[1])
-                            for arch in torch.cuda.get_arch_list() if 'sm_' in arch]
+            supported_sm = [int(arch)
+                            for arch in torch.cuda.get_arch_list()]
             max_supported_sm = max((sm // 10, sm % 10) for sm in supported_sm)
             # Capability of the device may be higher than what's supported by the user's
             # NVCC, causing compilation error. User's NVCC is expected to match the one

@@ -886,6 +886,7 @@ elseif(USE_CUDA)
     add_library(torch_cuda
         ${Caffe2_GPU_SRCS} ${Caffe2_GPU_SRCS_W_SORT_BY_KEY}
         ${Caffe2_GPU_CU_SRCS} ${Caffe2_GPU_CU_SRCS_W_SORT_BY_KEY})
+    set_property(TARGET torch_cuda PROPERTY CUDA_SEPARABLE_COMPILATION ON)
   endif()
   set(CUDA_LINK_LIBRARIES_KEYWORD)
   torch_compile_options(torch_cuda)  # see cmake/public/utils.cmake
