@@ -2,8 +2,8 @@
 # Now it only builds the Torch python bindings.
 
 if(NOT CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO)
-  cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-  project(torch CXX C)
+  cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+  project(torch LANGUAGES CXX C)
   find_package(torch REQUIRED)
   option(USE_CUDA "Use CUDA" ON)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
