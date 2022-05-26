@@ -506,6 +506,7 @@ endfunction()
 # Usage:
 #   torch_set_target_props(lib_name)
 function(torch_set_target_props libname)
+  return()
   if(MSVC AND AT_MKL_MT)
     set(VCOMP_LIB "vcomp")
     set_target_properties(${libname} PROPERTIES LINK_FLAGS_MINSIZEREL "/NODEFAULTLIB:${VCOMP_LIB}")

@@ -6,11 +6,6 @@ if(USE_VULKAN)
   include(../cmake/VulkanCodegen.cmake)
 endif()
 
-# ---[ MSVC OpenMP modification
-if(MSVC)
-  include(../cmake/public/utils.cmake)
-endif()
-
 # Debug messages - if you want to get a list of source files and examine
 # target information, enable the following by -DPRINT_CMAKE_DEBUG_INFO=ON.
 set(PRINT_CMAKE_DEBUG_INFO FALSE CACHE BOOL "print cmake debug information")
@@ -1186,11 +1181,6 @@ endif()
 if(USE_OPENMP)
   find_package(OpenMP QUIET)
   if(OPENMP_FOUND)
-    if(MSVC AND OpenMP_CXX_LIBRARIES MATCHES "libiomp5md\\.lib")
-      set(AT_MKL_MT 1)
-    else()
-      set(AT_MKL_MT 0)
-    endif()
     message(STATUS "pytorch is compiling with OpenMP. \n"
       "OpenMP CXX_FLAGS: ${OpenMP_CXX_FLAGS}. \n"
       "OpenMP libraries: ${OpenMP_CXX_LIBRARIES}.")
@@ -1680,9 +1670,7 @@ if(BUILD_TEST)
     add_executable(${test_name} "${test_src}")
     target_link_libraries(${test_name} torch_library gtest_main)
     if(USE_OPENMP)
-      # -fopenmp is a compile time flag and as result not guaranteed
-      # to link executable against OpenMP runtime library
-      target_link_libraries(${test_name} ${OpenMP_CXX_LIBRARIES})
+      target_link_libraries(${test_name} PRIVATE OpenMP::OpenMP_CXX)
     endif()
     target_include_directories(${test_name} PRIVATE $<INSTALL_INTERFACE:include>)
     target_include_directories(${test_name} PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>)
