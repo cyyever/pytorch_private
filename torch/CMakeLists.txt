@@ -107,11 +107,6 @@ if(MSVC)
     string(APPEND TORCH_PYTHON_LINK_FLAGS " /FORCE:UNRESOLVED")
 elseif(APPLE)
     string(APPEND TORCH_PYTHON_LINK_FLAGS " -undefined dynamic_lookup")
-else()
-    list(APPEND TORCH_PYTHON_COMPILE_OPTIONS
-      -fno-strict-aliasing
-      -Wno-write-strings
-      -Wno-strict-aliasing)
 endif()
 
 if(USE_ITT)
