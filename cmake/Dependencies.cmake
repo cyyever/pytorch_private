@@ -44,6 +44,8 @@ if(USE_CUDA)
     else()
       caffe2_update_option(USE_TENSORRT OFF)
     endif()
+    list(APPEND Caffe2_CUDA_DEPENDENCY_LIBS CUB::CUB)
+    list(APPEND Caffe2_CUDA_DEPENDENCY_LIBS Thrust::Thrust)
   else()
     message(WARNING
       "Not compiling with CUDA. Suppress this warning with "
@@ -1124,7 +1126,6 @@ if(USE_ROCM)
   include_directories(SYSTEM ${HIPSPARSE_PATH}/include)
   include_directories(SYSTEM ${HIPRAND_PATH}/include)
   include_directories(SYSTEM ${ROCRAND_PATH}/include)
-  include_directories(SYSTEM ${THRUST_PATH})
 endif()
 
 # ---[ NCCL
@@ -1156,16 +1157,6 @@ if(USE_UCC)
   endif()
 endif()
 
-# ---[ CUB
-if(USE_CUDA)
-  add_compile_definitions(THRUST_IGNORE_CUB_VERSION_CHECK)
-  find_package(CUB)
-  if(CUB_FOUND)
-    include_directories(SYSTEM ${CUB_INCLUDE_DIRS})
-  else()
-    include_directories(SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/cub)
-  endif()
-endif()
 
 if(USE_DISTRIBUTED AND USE_TENSORPIPE)
   if(MSVC)
@@ -1421,8 +1412,6 @@ if(NOT INTERN_BUILD_MOBILE)
     message(STATUS "Could not find CUDA with FP16 support, compiling without torch.CudaHalfTensor")
   endif()
 
-  set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
-
   if(USE_MAGMA)
     find_package(MAGMA)
   endif()
@@ -1633,7 +1622,7 @@ if(USE_KINETO)
   message(STATUS "  KINETO_LIBRARY_TYPE = ${KINETO_LIBRARY_TYPE}")
 
   if(NOT LIBKINETO_NOCUPTI)
-    set(CUDA_SOURCE_DIR "${CUDA_TOOLKIT_ROOT_DIR}" CACHE STRING "")
+    set(CUDA_SOURCE_DIR "${CUDAToolkit_TARGET_DIR}" CACHE STRING "")
     message(STATUS "  CUDA_SOURCE_DIR = ${CUDA_SOURCE_DIR}")
     message(STATUS "  CUDA_INCLUDE_DIRS = ${CUDA_INCLUDE_DIRS}")
 
