@@ -23,13 +23,13 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   set(CMAKE_CUDA_HOST_COMPILER "${CMAKE_C_COMPILER}")
 endif()
 enable_language(CUDA)
-set(CUDA_VERSION ${CUDAToolkit_VERSION})
+set(CUDA_VERSION ${CUDAToolkit_VERSION_MAJOR}.${CUDAToolkit_VERSION_MINOR})
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 message(STATUS "Caffe2: CUDA detected: " ${CUDA_VERSION})
 message(STATUS "Caffe2: CUDA nvcc is: " ${CUDA_NVCC_EXECUTABLE})
-message(STATUS "Caffe2: CUDA toolkit directory: " ${CUDA_TOOLKIT_ROOT_DIR})
+message(STATUS "Caffe2: CUDA toolkit directory: " ${CUDAToolkit_TARGET_DIR})
 
 # Find cuDNN.
 if(USE_STATIC_CUDNN)
@@ -49,10 +49,10 @@ endif()
 # Optionally, find TensorRT
 if(CAFFE2_USE_TENSORRT)
   find_path(TENSORRT_INCLUDE_DIR NvInfer.h
-    HINTS ${TENSORRT_ROOT} ${CUDA_TOOLKIT_ROOT_DIR}
+    HINTS ${TENSORRT_ROOT} ${CUDAToolkit_TARGET_DIR}
     PATH_SUFFIXES include)
   find_library(TENSORRT_LIBRARY nvinfer
-    HINTS ${TENSORRT_ROOT} ${CUDA_TOOLKIT_ROOT_DIR}
+    HINTS ${TENSORRT_ROOT} ${CUDAToolkit_TARGET_DIR}
     PATH_SUFFIXES lib lib64 lib/x64)
   find_package_handle_standard_args(
     TENSORRT DEFAULT_MSG TENSORRT_INCLUDE_DIR TENSORRT_LIBRARY)
@@ -276,6 +276,11 @@ set_property(
 set_property(
     TARGET caffe2::nvrtc PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CUDA_INCLUDE_DIRS})
+
+# CUB
+list(PREPEND CMAKE_PREFIX_PATH "${CUDAToolkit_TARGET_DIR}/lib64/cmake")
+find_package(cub REQUIRED)
+find_package(Thrust REQUIRED CONFIG)
 
 # Note: in theory, we can add similar dependent library wrappers. For
 # now, Caffe2 only uses the above libraries, so we will only wrap
