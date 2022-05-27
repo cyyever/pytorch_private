@@ -208,11 +208,11 @@ add_library(caffe2::cufft INTERFACE IMPORTED)
 if(CAFFE2_STATIC_LINK_CUDA)
    set_property(
         TARGET caffe2::cufft PROPERTY INTERFACE_LINK_LIBRARIES
-        CUDA::cufft)
+        CUDA::cufft_static)
 else()
    set_property(
         TARGET caffe2::cufft PROPERTY INTERFACE_LINK_LIBRARIES
-        CUDA::cufft_static)
+        CUDA::cufft)
 endif()
 
 # TensorRT
