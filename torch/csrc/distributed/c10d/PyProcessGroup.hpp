@@ -76,7 +76,7 @@ class PyProcessGroup : public ProcessGroup {
   }
 
   c10::intrusive_ptr<ProcessGroup::Work> barrier(
-      const BarrierOptions& opts = BarrierOptions()) {
+      const BarrierOptions& opts = BarrierOptions()) override {
     PYBIND11_OVERRIDE(
         c10::intrusive_ptr<ProcessGroup::Work>, /* Return type */
         ProcessGroup, /* Parent class */
