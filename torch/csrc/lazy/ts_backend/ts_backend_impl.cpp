@@ -112,7 +112,7 @@ class TSBackendImpl : public torch::lazy::BackendImplInterface {
     return std::make_shared<TSData>(scalar, device);
   }
 
-  torch::lazy::BackendDataPtr GetComputationDataFromNode(Node* node) const {
+  torch::lazy::BackendDataPtr GetComputationDataFromNode(Node* node) const override {
     auto* device_data_node = dynamic_cast<DeviceData*>(node);
     if (!device_data_node) {
       return nullptr;
