@@ -51,9 +51,15 @@ struct C10_API PODLocalDispatchKeySet {
     excluded_ = (x ^ c10::default_excluded_set).raw_repr();
   }
 };
+#if __cplusplus >= 202002L
+static_assert(
+    std::is_trivial<PODLocalDispatchKeySet>::value,
+    "PODLocalDispatchKeySet must be a trivial type.");
+#else
 static_assert(
     std::is_pod<PODLocalDispatchKeySet>::value,
     "PODLocalDispatchKeySet must be a POD type.");
+#endif
 
 struct C10_API LocalDispatchKeySet {
   /* implicit */ LocalDispatchKeySet(PODLocalDispatchKeySet x)
