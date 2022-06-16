@@ -3,6 +3,7 @@ set(FIND_CUDA_MODULE_DEPRECATED ON)
 
 # ---[ Project and semantic versioning.
 project(Torch LANGUAGES CXX C)
+cmake_policy(SET CMP0127 NEW)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(LINUX TRUE)
