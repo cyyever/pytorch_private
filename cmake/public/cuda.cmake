@@ -293,12 +293,6 @@ else()
   list(APPEND CMAKE_CUDA_FLAGS "-DONNX_NAMESPACE=onnx_c2")
 endif()
 
-# Don't activate VC env again for Ninja generators with MSVC on Windows if CUDAHOSTCXX is not defined
-# by adding --use-local-env.
-if(MSVC AND CMAKE_GENERATOR STREQUAL "Ninja" AND NOT DEFINED ENV{CUDAHOSTCXX})
-  list(APPEND CMAKE_CUDA_FLAGS "--use-local-env")
-endif()
-
 # # disable some nvcc diagnostic that appears in boost, glog, glags, opencv, etc.
 # foreach(diag cc_clobber_ignored integer_sign_change useless_using_declaration
 #              set_but_not_used field_without_dll_interface
@@ -320,34 +314,8 @@ if(MSVC)
   list(APPEND CMAKE_CUDA_FLAGS "--no-host-device-move-forward")
 endif()
 
-# OpenMP flags for NVCC with Clang-cl
-if("${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC"
-  AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  list(APPEND CUDA_PROPAGATE_HOST_FLAGS_BLOCKLIST "-Xclang" "-fopenmp")
-  if(MSVC_TOOLSET_VERSION LESS 142)
-    list(APPEND CMAKE_CUDA_FLAGS "-Xcompiler" "-openmp")
-  else()
-    list(APPEND CMAKE_CUDA_FLAGS "-Xcompiler" "-openmp:experimental")
-  endif()
-endif()
-
 # Debug and Release symbol support
-if(MSVC)
-  if(${CAFFE2_USE_MSVC_STATIC_RUNTIME})
-    string(APPEND CMAKE_CUDA_FLAGS_DEBUG " -Xcompiler /MTd")
-    string(APPEND CMAKE_CUDA_FLAGS_MINSIZEREL " -Xcompiler /MT")
-    string(APPEND CMAKE_CUDA_FLAGS_RELEASE " -Xcompiler /MT")
-    string(APPEND CMAKE_CUDA_FLAGS_RELWITHDEBINFO " -Xcompiler /MT")
-  else()
-    string(APPEND CMAKE_CUDA_FLAGS_DEBUG " -Xcompiler /MDd")
-    string(APPEND CMAKE_CUDA_FLAGS_MINSIZEREL " -Xcompiler /MD")
-    string(APPEND CMAKE_CUDA_FLAGS_RELEASE " -Xcompiler /MD")
-    string(APPEND CMAKE_CUDA_FLAGS_RELWITHDEBINFO " -Xcompiler /MD")
-  endif()
-  if(CMAKE_CUDA_FLAGS MATCHES "Zi")
-    list(APPEND CMAKE_CUDA_FLAGS "-Xcompiler" "-FS")
-  endif()
-elseif(CUDA_DEVICE_DEBUG)
+if(CUDA_DEVICE_DEBUG)
   list(APPEND CMAKE_CUDA_FLAGS "-g" "-G")  # -G enables device code debugging symbols
 endif()
 
