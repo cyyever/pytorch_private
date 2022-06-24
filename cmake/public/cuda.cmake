@@ -325,4 +325,8 @@ list(APPEND CMAKE_CUDA_FLAGS "--expt-relaxed-constexpr")
 # Set expt-extended-lambda to support lambda on device
 list(APPEND CMAKE_CUDA_FLAGS "--expt-extended-lambda")
 
+# list(APPEND CMAKE_CUDA_FLAGS "-dlto")
+
 string(REPLACE ";" " " CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
+
+# add_link_options($<DEVICE_LINK:-dlto>)
