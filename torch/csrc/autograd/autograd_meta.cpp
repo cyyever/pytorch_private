@@ -157,7 +157,7 @@ void AutogradMeta::set_fw_grad(
   TORCH_INTERNAL_ASSERT(
       (new_grad_base.is_floating_point() || new_grad_base.is_complex()) &&
           (self_base.is_floating_point() || self_base.is_complex()),
-      "Expected both tensor and its forward grad to be floating point or complex");
+      "Expected both tensor and its forward grad to be floating point or complex, but tensor is ", c10::toString(self_base.scalar_type())," and grad is ", c10::toString(new_grad_base.scalar_type()));
   // Lazy initialization
   {
     std::lock_guard<std::mutex> lock(mutex_);
