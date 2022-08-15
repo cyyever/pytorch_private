@@ -36,7 +36,7 @@ variable_list _make_grads(
       if (output.requires_grad()) {
         TORCH_CHECK(
             output.numel() == 1,
-            "grad can be implicitly created only for scalar outputs");
+            "grad can be implicitly created only for scalar outputs, but the output is [", output, "]");
         new_grads.emplace_back(
             at::ones_like(output, LEGACY_CONTIGUOUS_MEMORY_FORMAT));
       }
@@ -56,7 +56,7 @@ variable_list _make_grads(
         if (output.requires_grad()) {
           TORCH_CHECK(
               output.numel() == 1,
-              "grad can be implicitly created only for scalar outputs");
+              "grad can be implicitly created only for scalar outputs, but the output is [", output, "]");
           new_grads.emplace_back(
               at::ones_like(output, LEGACY_CONTIGUOUS_MEMORY_FORMAT));
         }
