@@ -50,7 +50,7 @@ set(CUDA_LINK_LIBRARIES_KEYWORD)
 target_compile_options(c10_cuda PRIVATE "-DC10_CUDA_BUILD_MAIN_LIB")
 
 # ---[ Dependency of c10_cuda
-target_link_libraries(c10_cuda PUBLIC c10 torch::cudart)
+target_link_libraries(c10_cuda PRIVATE c10 torch::cudart)
 
 target_include_directories(
     c10_cuda PUBLIC
