@@ -147,7 +147,6 @@ cmake_dependent_option(
     INSTALL_TEST "Install test binaries if BUILD_TEST is on" ON
     "BUILD_TEST" OFF)
 option(USE_CPP_CODE_COVERAGE "Compile C/C++ with code coverage flags" OFF)
-option(COLORIZE_OUTPUT "Colorize output during compilation" ON)
 option(USE_MEMORY_SANITIZERS "Use Google Sanitizers except TSAN AND MSAN" OFF)
 option(USE_MSAN "Use Memory Sanitizer" OFF)
 option(USE_TSAN "Use Thread Sanitizer" OFF)
@@ -974,6 +973,7 @@ if(BUILD_SHARED_LIBS)
       COMPONENT dev)
   install(FILES
       ${PROJECT_SOURCE_DIR}/cmake/public/cuda.cmake
+      ${PROJECT_SOURCE_DIR}/cmake/public/FindCUDNN.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/mkl.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/mkldnn.cmake
       ${PROJECT_SOURCE_DIR}/cmake/public/utils.cmake
