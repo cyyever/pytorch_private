@@ -690,6 +690,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.8.0
 endif()
 
 # ---[ Build flags
+add_compile_definitions("_GLIBCXX_USE_CXX11_ABI=1")
 if(NOT MSVC)
   string(APPEND CMAKE_CXX_FLAGS " -O2 -fPIC")
   # Eigen fails to build with some versions, so convert this to a warning
