@@ -6,6 +6,10 @@ if(USE_VULKAN)
   include(../cmake/VulkanCodegen.cmake)
 endif()
 
+# ---[ MSVC OpenMP modification
+if(MSVC)
+  include(../cmake/public/utils.cmake)
+endif()
 # Debug messages - if you want to get a list of source files and examine
 # target information, enable the following by -DPRINT_CMAKE_DEBUG_INFO=ON.
 set(PRINT_CMAKE_DEBUG_INFO FALSE CACHE BOOL "print cmake debug information")
