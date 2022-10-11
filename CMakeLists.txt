@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
-set(FIND_CUDA_MODULE_DEPRECATED ON)
 
 # ---[ Project and semantic versioning.
 project(Torch LANGUAGES CXX C)
@@ -32,16 +31,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #      find_package(Caffe2 REQUIRED)
 #    endif()
 set(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO ON)
-
-if(NOT DEFINED BLAS_SET_BY_USER)
-  if(DEFINED BLAS)
-    set(BLAS_SET_BY_USER TRUE)
-  else()
-    message(STATUS "Not forcing any particular BLAS to be found")
-    set(BLAS_SET_BY_USER FALSE)
-  endif()
-  set(BLAS_SET_BY_USER ${BLAS_SET_BY_USER} CACHE STRING "Marks whether BLAS was manually set by user or auto-detected")
-endif()
 
 # Apple specific
 if(APPLE)
@@ -366,7 +355,6 @@ option(USE_SYSTEM_FXDIV "Use system-provided fxdiv." OFF)
 option(USE_SYSTEM_BENCHMARK "Use system-provided google benchmark." OFF)
 option(USE_SYSTEM_ONNX "Use system-provided onnx." OFF)
 option(USE_SYSTEM_XNNPACK "Use system-provided xnnpack." OFF)
-option(USE_GOLD_LINKER "Use ld.gold to link" OFF)
 if(USE_SYSTEM_LIBS)
   set(USE_SYSTEM_CPUINFO ON)
   set(USE_SYSTEM_SLEEF ON)
@@ -515,11 +503,6 @@ if(INTERN_BUILD_MOBILE)
   set(USE_FBGEMM OFF)
   set(USE_QNNPACK OFF)
   set(INTERN_DISABLE_ONNX ON)
-  if(USE_BLAS)
-    set(INTERN_USE_EIGEN_BLAS ON)
-  else()
-    set(INTERN_USE_EIGEN_BLAS OFF)
-  endif()
   # Disable developing mobile interpreter for actual mobile build.
   # Enable it elsewhere to capture build error.
   set(INTERN_DISABLE_MOBILE_INTERP ON)
@@ -716,13 +699,12 @@ if(NOT MSVC)
   append_cxx_flag_if_supported("-Wno-strict-aliasing" CMAKE_CXX_FLAGS)
   append_cxx_flag_if_supported("-Wno-error=deprecated-declarations" CMAKE_CXX_FLAGS)
   append_cxx_flag_if_supported("-Wvla-extension" CMAKE_CXX_FLAGS)
+  append_cxx_flag_if_supported("-Wno-stringop-overflow" CMAKE_CXX_FLAGS)
   if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-range-loop-analysis")
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-pass-failed")
-    append_cxx_flag_if_supported(" -Wno-deprecated-builtins" CMAKE_CXX_FLAGS)
-  endif()
-  if(CMAKE_COMPILER_IS_GNUCXX AND NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0.0))
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-stringop-overflow")
+    append_cxx_flag_if_supported("-Wno-range-loop-analysis" CMAKE_CXX_FLAGS)
+    append_cxx_flag_if_supported("-Wno-pass-failed" CMAKE_CXX_FLAGS)
+    append_cxx_flag_if_supported("-Wno-deprecated-builtins" CMAKE_CXX_FLAGS)
+    append_cxx_flag_if_supported("-Wno-deprecated-declarations" CMAKE_CXX_FLAGS)
   endif()
   if(CMAKE_COMPILER_IS_GNUCXX)
     # Suppress "The ABI for passing parameters with 64-byte alignment has changed in GCC 4.6"
@@ -733,30 +715,6 @@ if(NOT MSVC)
     # labeled "final".
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=78010
     append_cxx_flag_if_supported("-Wsuggest-override" CMAKE_CXX_FLAGS)
-  endif()
-
-  # Use ld.gold if available, fall back to ld.bfd (the default ld) if not
-  if(USE_GOLD_LINKER)
-    if(USE_DISTRIBUTED AND USE_MPI)
-      # Same issue as here with default MPI on Ubuntu
-      # https://bugs.launchpad.net/ubuntu/+source/deal.ii/+bug/1841577
-      message(WARNING "Refusing to use gold when USE_MPI=1")
-    else()
-      execute_process(
-        COMMAND
-        "${CMAKE_C_COMPILER}" -fuse-ld=gold -Wl,--version
-         ERROR_QUIET
-         OUTPUT_VARIABLE LD_VERSION)
-      if(NOT "${LD_VERSION}" MATCHES "GNU gold")
-        message(WARNING "USE_GOLD_LINKER was set but ld.gold isn't available, turning it off")
-        set(USE_GOLD_LINKER OFF)
-      else()
-        message(STATUS "ld.gold is available, using it to link")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fuse-ld=gold")
-        set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fuse-ld=gold")
-      endif()
-    endif()
   endif()
 
   append_cxx_flag_if_supported("-Wno-error=pedantic" CMAKE_CXX_FLAGS)
