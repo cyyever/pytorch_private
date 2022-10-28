@@ -430,6 +430,7 @@ if(USE_CUDA AND NOT USE_ROCM)
       CUDA::curand
       CUDA::cufft
     )
+  endif()
   if(NOT BUILD_LAZY_CUDA_LINALG)
      list(APPEND ATen_CUDA_DEPENDENCY_LIBS
        ${CUDA_cusolver_LIBRARY}
