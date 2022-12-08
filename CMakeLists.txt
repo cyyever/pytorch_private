@@ -11,12 +11,6 @@ else()
 endif()
 
 # check and set CMAKE_CXX_STANDARD
-string(FIND "${CMAKE_CXX_FLAGS}" "-std=c++" env_cxx_standard)
-if(env_cxx_standard GREATER -1)
-  message(
-      WARNING "C++ standard version definition detected in environment variable."
-      "PyTorch requires -std=c++17. Please remove -std=c++ settings in your environment.")
-endif()
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard whose features are requested to build this target.")
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD   11 CACHE STRING "The C standard whose features are requested to build this target.")
