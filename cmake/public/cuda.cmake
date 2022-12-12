@@ -236,6 +236,7 @@ endif()
 
 # CUB
 list(PREPEND CMAKE_PREFIX_PATH "${CUDAToolkit_TARGET_DIR}/lib64/cmake")
+list(PREPEND CMAKE_PREFIX_PATH "${CUDAToolkit_TARGET_DIR}/lib/cmake")
 find_package(cub REQUIRED)
 find_package(Thrust REQUIRED CONFIG)
 
