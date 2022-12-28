@@ -113,7 +113,7 @@ static PyObject* THPStorage_shareFilename(PyObject* self, PyObject* noargs) {
 
     {
       // Copying into shared memory can be slow, so release the GIL
-      pybind11::gil_scoped_release no_gil;
+      /* pybind11::gil_scoped_release no_gil; */
       // Copy data from old storage into the new one
       at::storage_copy(new_storage, storage);
     }
@@ -204,7 +204,7 @@ static PyObject* THPStorage_shareFd(PyObject* self, PyObject* noargs) {
     at::Storage new_storage(at::new_shm_fd_storage(storage.nbytes()));
     {
       // Copying into shared memory can be slow, so release the GIL
-      pybind11::gil_scoped_release no_gil;
+      /* pybind11::gil_scoped_release no_gil; */
       // Copy data from old storage into the new one
       at::storage_copy(new_storage, storage);
     }
