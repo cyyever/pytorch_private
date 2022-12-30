@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 # ---[ Project and semantic versioning.
 project(Torch LANGUAGES CXX C)
