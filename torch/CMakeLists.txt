@@ -254,7 +254,9 @@ if(USE_DISTRIBUTED)
     # alternative to making NCCL a public dependency of libtorch, we make it
     # a private dependency of libtorch_python as well.
     if(USE_NCCL)
+    if(TARGET __caffe2_nccl)
       list(APPEND TORCH_PYTHON_LINK_LIBRARIES __caffe2_nccl)
+    endif()
     endif()
     # Same for MPI.
     if(USE_MPI)

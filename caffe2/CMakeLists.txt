@@ -852,8 +852,10 @@ if(USE_ROCM)
   torch_compile_options(torch_hip)  # see cmake/public/utils.cmake
   # TODO: Not totally sure if this is live or not
   if(USE_NCCL)
-    target_link_libraries(torch_hip PRIVATE __caffe2_nccl)
-    target_compile_definitions(torch_hip PRIVATE USE_NCCL)
+    if(TARGET __caffe2_nccl)
+      target_link_libraries(torch_hip PRIVATE __caffe2_nccl)
+      target_compile_definitions(torch_hip PRIVATE USE_NCCL)
+    endif()
   endif()
 
   if(USE_PRECOMPILED_HEADERS)
