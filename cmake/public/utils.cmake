@@ -411,9 +411,6 @@ function(torch_compile_options libname)
   set(private_compile_options "")
 
   # ---[ Check if warnings should be errors.
-  if(WERROR)
-    list(APPEND private_compile_options -Werror)
-  endif()
 
   # until they can be unified, keep these lists synced with setup.py
   if(MSVC)
