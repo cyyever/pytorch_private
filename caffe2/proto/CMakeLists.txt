@@ -20,4 +20,7 @@ endif()
 target_compile_definitions(
     Caffe2_PROTO PRIVATE ${TORCH_API_DEFINE})
 
+target_compile_definitions(
+    Caffe2_PROTO PRIVATE PROTOBUF_USE_DLLS)
+
 install(FILES ${Caffe2_PROTO_HEADERS} DESTINATION include/caffe2/proto)
